@@ -29,7 +29,7 @@ QList<quint32> CardDeck::shuffleCards(quint32 deckCount, quint32 shuffleCoeffici
         std::shuffle(deck.begin(), deck.end(), *QRandomGenerator::global());
         quint32 lastJokerIndex = -1;
         for (int i = 0; i < deck.size(); i++) {
-            if (!(deck[i] & 0xff)) {
+            if (!getRank(deck[i])) {
                 if (i - lastJokerIndex < threshold)
                     continue;
                 lastJokerIndex = i;
@@ -42,13 +42,13 @@ QList<quint32> CardDeck::shuffleCards(quint32 deckCount, quint32 shuffleCoeffici
 }
 
 QString CardDeck::cardName(quint32 id, quint32 standard) {
-    quint32 rank = id & 0xff;
-    quint32 suit = (id >> 8) & 0xff;
-    QString name = getRank(rank, standard & 1);
-    if (!(id & 0xff)) {
-        name = getColour(suit) + name;
+    quint32 rank = getRank(id);
+    quint32 suit = getSuit(id);
+    QString name = getRankName(rank, standard & 1);
+    if (isJoker(id)) {
+        name = getColourName(suit) + name;
     } else {
-        name += getSuit(suit);
+        name += getSuitName(suit);
     }
 
     return name;
@@ -69,7 +69,7 @@ QList<quint32> CardDeck::generateDeck(quint32 deckCount) {
     return deck;
 }
 
-QString CardDeck::getColour(quint32 colour) {
+QString CardDeck::getColourName(quint32 colour) {
     switch (colour) {
         case Black:
             return QStringLiteral("black_");
@@ -80,7 +80,7 @@ QString CardDeck::getColour(quint32 colour) {
     }
 }
 
-QString CardDeck::getSuit(quint32 suit) {
+QString CardDeck::getSuitName(quint32 suit) {
     switch (suit) {
         case Clubs:
             return QStringLiteral("_club");
@@ -95,7 +95,7 @@ QString CardDeck::getSuit(quint32 suit) {
     }
 }
 
-QString CardDeck::getRank(quint32 rank, bool standard) {
+QString CardDeck::getRankName(quint32 rank, bool standard) {
     switch (rank) {
         case King:
             return QStringLiteral("king");
@@ -119,5 +119,13 @@ QString CardDeck::getRank(quint32 rank, bool standard) {
 }
 
 bool CardDeck::isJoker(quint32 id) {
-    return !(id & 0xff);
+    return !getRank(id);
+}
+
+quint32 CardDeck::getRank(quint32 id) {
+    return Rank(id & 0xff);
+}
+
+quint32 CardDeck::getSuit(quint32 id) {
+    return (id >> 8) & 0xff;
 }

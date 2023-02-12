@@ -50,9 +50,15 @@ signals:
 
     void tableSlotResized(QSize newFixedSize);
 
-private Q_SLOTS:
+    /**
+    * @brief CanRemove - Signal emitted when the minimum number of required TableSlots is reached or exceeded,
+    * indicating whether it is now possible to remove some of the TableSlots.
+    *
+    * @param canRemove A boolean value indicating whether it is now possible to remove some of the TableSlots.
+    */
+    void canRemove(bool canRemove);
 
-    void onScoreChanged(int count);
+private Q_SLOTS:
 
     void newGame();
 
@@ -90,7 +96,7 @@ protected:
 private:
     void setupActions();
 
-    void addNewTableSlot();
+    void addNewTableSlot(bool isActive = false);
 
     void setRenderer(QString cardTheme);
 
@@ -104,18 +110,19 @@ private:
     QSvgRenderer *renderer;
     QGridLayout *layout;
     QWidget *table;
-
-    QVector<int> swapTarget;
     QRectF bounds;
-    QVector<TableSlot *> items;
-
-    quint32 columnCount = -1;
-    qreal scale = -1;
-
-    bool launching;
     QTimer *countdown;
 
+    bool launching;
+    quint32 columnCount = -1;
+    quint32 tableSlotCountLimit;
+    qreal scale = -1;
+
+    QPair<quint32, quint32> score;
+    QVector<int> swapTarget;
+    QVector<TableSlot *> items;
     QSet<quint32> jokers;
+    QSet<quint32> available;
 
     /**
     * @brief The purpose of this function is to find the optimal number of columns for the table,

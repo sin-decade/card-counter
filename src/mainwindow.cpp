@@ -20,8 +20,6 @@
 
 // Qt
 #include <QApplication>
-#include <QSaveFile>
-#include <QFileDialog>
 #include <QStatusBar>
 #include <QGraphicsView>
 #include <QQuickWidget>
@@ -29,26 +27,22 @@
 #include <QVBoxLayout>
 #include <QSvgRenderer>
 #include <QStandardPaths>
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QGraphicsSvgItem>
-#include <QSizePolicy>
 #include <QtMath>
 #include <QTimer>
 #include <QRandomGenerator>
+#include <QStack>
 // KDEGames
 #include <KGameClock>
 #include <KgDifficulty>
 #include <KStandardGameAction>
-#include <KgThemeSelector>
-#include <KScoreDialog>
 // KF
 #include <KLocalizedString>
 #include <KActionCollection>
 #include <KStandardAction>
 #include <KMessageBox>
-#include <KIO/Job>
 // own
 #include "mainwindow.hpp"
 #include "tableslot.hpp"
@@ -101,10 +95,6 @@ void MainWindow::setupActions() {
     setupGUI(Default, "yacardcounterui.rc");
 }
 
-void MainWindow::onScoreChanged(int count) {
-    scoreLabel->setText(i18n("Score: %1/%2", count, 0));
-}
-
 void MainWindow::newGame() {
     launching = true;
 
@@ -116,6 +106,8 @@ void MainWindow::newGame() {
         items.pop_back();
         delete last;
     }
+    available.clear();
+    jokers.clear();
 
     if (!m_actionPause->isChecked()) {
         m_actionPause->setChecked(true);
@@ -126,23 +118,34 @@ void MainWindow::newGame() {
         case KgDifficultyLevel::Easy:
             // tableSlotsCount: 1+
             // cardPickUpsAtTime: 1
+            tableSlotCountLimit = 1;
+            break;
         case KgDifficultyLevel::Medium:
             // tableSlotsCount: 2+
             // cardPickUpsAtTime: 2
+            tableSlotCountLimit = 2;
+            break;
         case KgDifficultyLevel::Hard:
             // tableSlotsCount: 4+
             // cardPickUpsAtTime: 4
-        case 1000: // Nightmare
+            tableSlotCountLimit = 4;
+            break;
+        case KgDifficultyLevel::Custom: // Nightmare
             // tableSlotsCount: 6+
             // cardPickUpsAtTime: all
-        default:
+            tableSlotCountLimit = 6;
             break;
+        default:
+            qDebug() << Kg::difficultyLevel();
+            break;
+    }
+    while (items.count() < tableSlotCountLimit) {
+        addNewTableSlot(true);
     }
 
     timeLabel->setText(i18n("Time: 00:00"));
-
     addNewTableSlot();
-    calculateNewColumnCount(table->size(), bounds.size(), layout->count());
+    calculateNewColumnCount(table->size(), bounds.size(), items.count());
 }
 
 void MainWindow::onGameOver(bool won) {
@@ -186,11 +189,18 @@ void MainWindow::loadSettings() {
 
 void MainWindow::onTableSlotActivated() {
     TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
+    available.insert(layout->indexOf(tableSlot));
     addNewTableSlot();
+    calculateNewColumnCount(table->size(), bounds.size(), items.count());
+    emit canRemove(available.size() > tableSlotCountLimit);
 }
 
-void MainWindow::addNewTableSlot() {
-    TableSlot *tableSlot = new TableSlot(renderer);
+void MainWindow::addNewTableSlot(bool isActive) {
+//    qDebug() << items.count() << isActive;
+    TableSlot *tableSlot = new TableSlot(renderer, isActive, this);
+    if (isActive) {
+        available.insert(items.size());
+    }
     connect(tableSlot, &TableSlot::tableSlotActivated, this, &MainWindow::onTableSlotActivated);
     connect(tableSlot, &TableSlot::tableSlotFinished, this, &MainWindow::onTableSlotFinished);
     connect(tableSlot, &TableSlot::tableSlotRemoved, this, &MainWindow::onTableSlotRemoved);
@@ -200,43 +210,52 @@ void MainWindow::addNewTableSlot() {
     connect(tableSlot, &TableSlot::swapTargetSelected, this, &MainWindow::onSwapTargetSelected);
     connect(this, &MainWindow::gamePaused, tableSlot, &TableSlot::onGamePaused);
     connect(this, &MainWindow::tableSlotResized, tableSlot, &TableSlot::onTableSlotResized);
+    connect(this, &MainWindow::canRemove, tableSlot, &TableSlot::onCanRemove);
     items.push_back(tableSlot);
-
-    calculateNewColumnCount(table->size(), bounds.size(), items.count());
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
-    calculateNewColumnCount(centralWidget()->size(), bounds.size(), layout->count());
+    calculateNewColumnCount(centralWidget()->size(), bounds.size(), items.count());
 }
 
 void MainWindow::onTableSlotFinished() {
-
+    TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
+    available.remove(layout->indexOf(tableSlot));
 }
 
 void MainWindow::onTableSlotRemoved() {
     TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
     items.remove(layout->indexOf(tableSlot));
+    available.remove(layout->indexOf(tableSlot));
+    jokers.remove(layout->indexOf(tableSlot));
     calculateNewColumnCount(table->size(), bounds.size(), items.count());
+    emit canRemove(available.size() > tableSlotCountLimit);
 }
 
 void MainWindow::onTableSlotReshuffled() {
-
+    TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
+    available.insert(layout->indexOf(tableSlot));
 }
 
 void MainWindow::onUserQuizzed() {
     countdown->stop();
     TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
     jokers.insert(layout->indexOf(tableSlot));
+    available.remove(layout->indexOf(tableSlot));
 }
 
 void MainWindow::onUserAnswered(bool correct) {
     TableSlot *tableSlot = qobject_cast<TableSlot *>(sender());
     jokers.remove(layout->indexOf(tableSlot));
+    available.insert(layout->indexOf(tableSlot));
+    score.second++;
+    score.first += correct;
     if (jokers.empty()) {
         countdown->start(300);
     }
+    scoreLabel->setText(i18n("Score: %1/%2", score.first, score.second));
 }
 
 void MainWindow::calculateNewColumnCount(const QSizeF &tableSize, const QSizeF &aspectRatio, int itemCount) {
@@ -287,7 +306,23 @@ void MainWindow::onSwapTargetSelected() {
 }
 
 void MainWindow::pickUpCards() {
-    items[QRandomGenerator::global()->bounded(items.size())]->pickUpCard();
+    if (Kg::difficultyLevel() == KgDifficultyLevel::Custom || available.size() <= tableSlotCountLimit) {
+        for (auto idx: available) {
+            items[idx]->pickUpCard();
+        }
+    } else {
+        QStack<quint32> picked;
+        while (picked.size() < tableSlotCountLimit) {
+            auto it = available.begin();
+            picked.push(QRandomGenerator::global()->bounded(available.size()));
+            std::advance(it, picked.top());
+            items[*it]->pickUpCard();
+            available.remove(picked.top());
+        }
+        while (!picked.empty()) {
+            available.insert(picked.pop());
+        }
+    }
 }
 
 void MainWindow::setRenderer(QString cardTheme) {

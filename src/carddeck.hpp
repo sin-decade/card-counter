@@ -45,11 +45,15 @@ public:
 
     static bool isJoker(quint32 id);
 
-    static QString getColour(quint32 colour);
+    static QString getColourName(quint32 colour);
 
-    static QString getSuit(quint32 suit);
+    static QString getSuitName(quint32 suit);
 
-    static QString getRank(quint32 rank, bool standard = true);
+    static QString getRankName(quint32 rank, bool standard = true);
+
+    static quint32 getRank(quint32 id);
+
+    static quint32 getSuit(quint32 id);
 };
 
 
