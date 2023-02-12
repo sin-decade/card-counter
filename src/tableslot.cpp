@@ -48,10 +48,7 @@ void TableSlot::paintEvent(QPaintEvent *event) {
 
 TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
         : QWidget(parent), m_renderer(renderer) {
-    fake = true;
-    svgName = "back";
     QStringList items = {"Hi-Lo Count", "Hi-Opt I Count", "Hi-Opt II Count", "KO Count"};
-    strategyID = 0;
 
     // YaLabels:
     messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
@@ -83,11 +80,11 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     deckCount->setRange(isActive, 10);
 
     // QPushButtons:
-    QPushButton *submitButton = new QPushButton(i18n("&Submit"));
+    QPushButton *submitButton = new QPushButton(QIcon::fromTheme("answer"), i18n("&Submit"));
     submitButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     connect(submitButton, &QPushButton::clicked, this, &TableSlot::userChecking);
 
-    QPushButton *skipButton = new QPushButton(i18n("&Skip"));
+    QPushButton *skipButton = new QPushButton(QIcon::fromTheme("media-skip-forward"), i18n("&Skip"));
     skipButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 //    connect(skipButton, &QPushButton::clicked, this, &TableSlot::skipping);
 

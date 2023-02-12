@@ -33,7 +33,6 @@
 #include <QtMath>
 #include <QTimer>
 #include <QRandomGenerator>
-#include <QStack>
 // KDEGames
 #include <KGameClock>
 #include <KgDifficulty>
@@ -179,6 +178,7 @@ void MainWindow::pauseGame(bool paused) {
     if (paused) {
         countdown->stop();
     } else if (jokers.empty()) {
+        countdown->stop();
         countdown->start(300);
     }
 }
@@ -253,6 +253,7 @@ void MainWindow::onUserAnswered(bool correct) {
     score.second++;
     score.first += correct;
     if (jokers.empty()) {
+        countdown->stop();
         countdown->start(300);
     }
     scoreLabel->setText(i18n("Score: %1/%2", score.first, score.second));
@@ -306,23 +307,20 @@ void MainWindow::onSwapTargetSelected() {
 }
 
 void MainWindow::pickUpCards() {
-    if (Kg::difficultyLevel() == KgDifficultyLevel::Custom || available.size() <= tableSlotCountLimit) {
-        for (auto idx: available) {
-            items[idx]->pickUpCard();
-        }
-    } else {
-        QStack<quint32> picked;
-        while (picked.size() < tableSlotCountLimit) {
-            auto it = available.begin();
-            picked.push(QRandomGenerator::global()->bounded(available.size()));
-            std::advance(it, picked.top());
+    QSet<quint32> picked;
+    while (!available.empty() &&
+           (picked.size() < tableSlotCountLimit || Kg::difficultyLevel() == KgDifficultyLevel::Custom)) {
+        auto it = available.begin();
+        quint32 idx = QRandomGenerator::global()->bounded(available.size());
+        std::advance(it, idx);
+        if (!picked.contains(*it)) {
+            picked.insert(*it);
             items[*it]->pickUpCard();
-            available.remove(picked.top());
-        }
-        while (!picked.empty()) {
-            available.insert(picked.pop());
+            available.remove(*it);
         }
     }
+    available.unite(picked);
+    picked.clear();
 }
 
 void MainWindow::setRenderer(QString cardTheme) {

@@ -116,11 +116,11 @@ private:
     void userQuizzing();
 
     QList<quint32> cards;
-    QString svgName;
+    QString svgName = "back";
     qint32 currentCardID;
-    quint32 strategyID;
+    quint32 strategyID = 0;
     qint32 currentWeight;
-    bool fake;
+    bool fake = true;
 
     QSvgRenderer *m_renderer;
 
