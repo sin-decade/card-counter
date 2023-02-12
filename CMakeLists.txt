@@ -36,7 +36,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(YaCardCounter_SRCS src/main.cpp src/mainwindow.cpp src/tableslot.cpp src/carddeck.cpp src/strategy.cpp
+set(YaCardCounter_SRCS src/main.cpp
+        src/mainwindow.cpp src/tableslot.cpp src/carddeck.cpp src/strategy.cpp src/table.cpp
         src/widgets/label.cpp src/widgets/frame.cpp)
 
 add_executable(YaCardCounter ${YaCardCounter_SRCS})

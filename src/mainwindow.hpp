@@ -26,17 +26,12 @@
 // Qt
 #include <QPointer>
 #include <QLabel>
-#include <QSet>
 
 class KGameClock;
 
 class KToggleAction;
 
-class QGridLayout;
-
-class QSvgRenderer;
-
-class TableSlot;
+class Table;
 
 class MainWindow : public KXmlGuiWindow {
 Q_OBJECT
@@ -44,27 +39,15 @@ Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
-signals:
-
-    void gamePaused(bool paused);
-
-    void tableSlotResized(QSize newFixedSize);
-
-    /**
-    * @brief CanRemove - Signal emitted when the minimum number of required TableSlots is reached or exceeded,
-    * indicating whether it is now possible to remove some of the TableSlots.
-    *
-    * @param canRemove A boolean value indicating whether it is now possible to remove some of the TableSlots.
-    */
-    void canRemove(bool canRemove);
-
 private Q_SLOTS:
+
+    void advanceTime(const QString &);
+
+    void loadSettings();
 
     void newGame();
 
-    void onGameOver(bool);
-
-    void advanceTime(const QString &);
+    void onGameOver();
 
     void showHighScores();
 
@@ -72,81 +55,19 @@ private Q_SLOTS:
 
     void pauseGame(bool paused);
 
-    void loadSettings();
-
-    void onTableSlotActivated();
-
-    void onTableSlotFinished();
-
-    void onTableSlotRemoved();
-
-    void onTableSlotReshuffled();
-
-    void onUserQuizzed();
-
-    void onUserAnswered(bool correct);
-
-    void onSwapTargetSelected();
-
-    void pickUpCards();
-
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+    void onScoreUpdate(bool inc);
 
 private:
     void setupActions();
 
-    void addNewTableSlot(bool isActive = false);
-
-    void setRenderer(QString cardTheme);
-
+    Table *table;
 
     KGameClock *m_gameClock = nullptr;
     KToggleAction *m_actionPause = nullptr;
 
-    QPointer<QLabel> scoreLabel = new QLabel;
     QPointer<QLabel> timeLabel = new QLabel;
-
-    QSvgRenderer *renderer;
-    QGridLayout *layout;
-    QWidget *table;
-    QRectF bounds;
-    QTimer *countdown;
-
-    bool launching;
-    quint32 columnCount = -1;
-    quint32 tableSlotCountLimit;
-    qreal scale = -1;
-
-    QPair<quint32, quint32> score;
-    QVector<int> swapTarget;
-    QVector<TableSlot *> items;
-    QSet<quint32> jokers;
-    QSet<quint32> available;
-
-    /**
-    * @brief The purpose of this function is to find the optimal number of columns for the table,
-     * based on the given size of the table and aspect ratio of each item. This is done in order to
-     * fill the maximum percent of the table and maintain the aspect ratio of the items. The function
-     * balances the height and width of the items to ensure they do not become too tall or too wide.
-    * @param tableSize The size of the area in which the grid of table slots should fit.
-    * @param aspectRatio The aspect ratio (height to width) of the cards.
-    * @param itemCount The number of table slots on the table.
-    */
-    void calculateNewColumnCount(const QSizeF &tableSize, const QSizeF &aspectRatio, int itemCount);
-
-    /**
-     * @brief Reorganizes the table by adjusting the number of columns and the scale of table slots (items).
-     *
-     * This function is used to rearrange the items in the grid layout so that they fill the maximum amount of
-     * the parent widget's space. The new number of columns and the scale of the items are specified as arguments.
-     * This ensures that the height and width of the items are properly balanced and optimized for display.
-     *
-     * @param newColumnCount The new number of columns to use in the grid layout.
-     * @param newScale The new scale to use for the size of the table slots (items).
-     */
-    void reorganizeTable(int newColumnCount, double newScale);
-
+    QPointer<QLabel> scoreLabel = new QLabel;
+    QPair<qint32, qint32> score;
 };
 
 

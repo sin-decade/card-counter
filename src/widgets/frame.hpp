@@ -21,6 +21,7 @@
 #ifndef YACARDCOUNTER_FRAME_HPP
 #define YACARDCOUNTER_FRAME_HPP
 
+// Qt
 #include <QFrame>
 
 class Q_WIDGETS_EXPORT YaFrame : public QFrame {

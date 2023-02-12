@@ -24,7 +24,6 @@
 #include <QSpinBox>
 #include <QPainter>
 #include <QPushButton>
-#include <QDebug>
 #include <QComboBox>
 #include <QCheckBox>
 // KF
@@ -38,7 +37,7 @@
 #include "widgets/frame.hpp"
 
 void TableSlot::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     if (m_renderer->isValid() && m_renderer->elementExists(svgName)) {
         QPainter painter(this);
@@ -56,13 +55,13 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     weightLabel = new YaLabel("weight: 0");
 
     // QComboBoxes:
-    QComboBox *strategy = new QComboBox();
+    auto *strategy = new QComboBox();
     connect(strategy, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         strategyID = index;
     });
-    QCheckBox *indexing = new QCheckBox();
+    auto *indexing = new QCheckBox();
     connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
-    QCheckBox *training = new QCheckBox();
+    auto *training = new QCheckBox();
     connect(training, &QCheckBox::stateChanged, weightLabel, &YaLabel::setVisible);
 
     // QFrames:
@@ -80,11 +79,11 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     deckCount->setRange(isActive, 10);
 
     // QPushButtons:
-    QPushButton *submitButton = new QPushButton(QIcon::fromTheme("answer"), i18n("&Submit"));
+    auto *submitButton = new QPushButton(QIcon::fromTheme("answer"), i18n("&Submit"));
     submitButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     connect(submitButton, &QPushButton::clicked, this, &TableSlot::userChecking);
 
-    QPushButton *skipButton = new QPushButton(QIcon::fromTheme("media-skip-forward"), i18n("&Skip"));
+    auto *skipButton = new QPushButton(QIcon::fromTheme("media-skip-forward"), i18n("&Skip"));
     skipButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 //    connect(skipButton, &QPushButton::clicked, this, &TableSlot::skipping);
 
@@ -103,15 +102,15 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     connect(swapButton, &QPushButton::clicked, this, &TableSlot::swapTargetSelected);
 
     // QFormLayouts:
-    QFormLayout *settings = new QFormLayout(settingsFrame);
+    auto *settings = new QFormLayout(settingsFrame);
     settings->setFormAlignment(Qt::AlignCenter);
-    QFormLayout *answer = new QFormLayout(answerFrame);
+    auto *answer = new QFormLayout(answerFrame);
     answer->setFormAlignment(Qt::AlignCenter);
 
     // Other Layouts:
-    QVBoxLayout *boxLayout = new QVBoxLayout(this);
-    QHBoxLayout *infoLayout = new QHBoxLayout();
-    QHBoxLayout *controlLayout = new QHBoxLayout(controlFrame);
+    auto *boxLayout = new QVBoxLayout(this);
+    auto *infoLayout = new QHBoxLayout();
+    auto *controlLayout = new QHBoxLayout(controlFrame);
 
     infoLayout->addWidget(weightLabel);
     infoLayout->addStretch();
@@ -167,7 +166,7 @@ void TableSlot::onTableSlotResized(QSize newFixedSize) {
     }
 }
 
-bool TableSlot::isFake() {
+bool TableSlot::isFake() const {
     return fake;
 }
 

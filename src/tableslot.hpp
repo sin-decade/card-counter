@@ -21,7 +21,6 @@
 #ifndef YACARDCOUNTER_TABLESLOT_HPP
 #define YACARDCOUNTER_TABLESLOT_HPP
 
-
 // Qt
 #include <QWidget>
 
@@ -50,7 +49,7 @@ public:
 
     void paintEvent(QPaintEvent *event) override;
 
-    bool isFake();
+    bool isFake() const;
 
     void pickUpCard();
 
@@ -115,10 +114,10 @@ public Q_SLOTS:
 private:
     void userQuizzing();
 
-    QList<quint32> cards;
+    QList<qint32> cards;
     QString svgName = "back";
     qint32 currentCardID;
-    quint32 strategyID = 0;
+    qint32 strategyID = 0;
     qint32 currentWeight;
     bool fake = true;
 

@@ -20,12 +20,13 @@
 
 #ifndef YACARDCOUNTER_STRATEGY_HPP
 #define YACARDCOUNTER_STRATEGY_HPP
+
 // Qt
 #include <QObject>
 
 class Strategy {
 public:
-    static qint32 updateWeight(qint32 currentWeight, quint32 cardID, quint32 strategyID);
+    static qint32 updateWeight(qint32 currentWeight, qint32 cardID, qint32 strategyID);
 };
 
 

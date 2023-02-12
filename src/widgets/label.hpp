@@ -21,7 +21,7 @@
 #ifndef YACARDCOUNTER_YALABEL_HPP
 #define YACARDCOUNTER_YALABEL_HPP
 
-
+// Qt
 #include <QLabel>
 
 class Q_WIDGETS_EXPORT YaLabel : public QLabel {

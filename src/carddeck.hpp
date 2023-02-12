@@ -20,6 +20,7 @@
 
 #ifndef YACARDCOUNTER_CARDDECK_HPP
 #define YACARDCOUNTER_CARDDECK_HPP
+
 // Qt
 #include <QObject>
 
@@ -37,23 +38,23 @@ public:
         Joker = 0, Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
     };
 
-    static QList<quint32> shuffleCards(quint32 deckCount, quint32 shuffleCoefficient = 2);
+    static QList<qint32> shuffleCards(qint32 deckCount, qint32 shuffleCoefficient = 2);
 
-    static QList<quint32> generateDeck(quint32 deckCount);
+    static QList<qint32> generateDeck(qint32 deckCount);
 
-    static QString cardName(quint32 id, quint32 standard = 0);
+    static QString cardName(qint32 id, qint32 standard = 0);
 
-    static bool isJoker(quint32 id);
+    static bool isJoker(qint32 id);
 
-    static QString getColourName(quint32 colour);
+    static QString getColourName(qint32 colour);
 
-    static QString getSuitName(quint32 suit);
+    static QString getSuitName(qint32 suit);
 
-    static QString getRankName(quint32 rank, bool standard = true);
+    static QString getRankName(qint32 rank, bool standard = true);
 
-    static quint32 getRank(quint32 id);
+    static qint32 getRank(qint32 id);
 
-    static quint32 getSuit(quint32 id);
+    static qint32 getSuit(qint32 id);
 };
 
 
