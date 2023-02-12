@@ -21,11 +21,8 @@
 #ifndef YACARDCOUNTER_TABLESLOT_HPP
 #define YACARDCOUNTER_TABLESLOT_HPP
 
-
 // Qt
 #include <QWidget>
-#include <QPointer>
-#include <QLabel>
 
 class QSvgRenderer;
 
@@ -33,7 +30,11 @@ class QSpinBox;
 
 class QVBoxLayout;
 
-class QFrame;
+class QPushButton;
+
+class YaFrame;
+
+class YaLabel;
 
 /*!
  * \brief The TableSlot class represents the slot on a table that can contain
@@ -44,13 +45,13 @@ class TableSlot : public QWidget {
 Q_OBJECT
 
 public:
-    TableSlot(QSvgRenderer *renderer, QWidget *parent = nullptr);
+    explicit TableSlot(QSvgRenderer *renderer, bool isActive = false, QWidget *parent = nullptr);
 
     void paintEvent(QPaintEvent *event) override;
 
-    bool isFake();
+    bool isFake() const;
 
-    bool pickUpCard();
+    void pickUpCard();
 
 signals:
 
@@ -102,26 +103,42 @@ public Q_SLOTS:
 
     void onTableSlotResized(QSize newFixedSize);
 
+    void onCanRemove(bool canRemove);
+
     void userChecking();
+
+    void reshuffleDeck();
+
+    void activate(int value);
 
 private:
     void userQuizzing();
 
-    bool fake;
-    QSvgRenderer *m_renderer;
-    QString svgName;
+    QList<qint32> cards;
+    QString svgName = "back";
     qint32 currentCardID;
-    QSpinBox *weightBox;
+    qint32 strategyID = 0;
+    qint32 currentWeight;
+    bool fake = true;
+
+    QSvgRenderer *m_renderer;
+
+    YaFrame *answerFrame;
+    YaFrame *settingsFrame;
+    YaFrame *controlFrame;
     /**
      * @brief deckCount - Spin box for setting the number of standard decks in the table slot
      */
     QSpinBox *deckCount;
-    QVBoxLayout *boxLayout;
-    QPointer<QLabel> label = new QLabel;
-    QFrame *answerFrame;
-    QFrame *settingsFrame;
-    QFrame *controlFrame;
-    QList<quint32> cards;
+    QSpinBox *weightBox;
+
+    YaLabel *messageLabel;
+    YaLabel *indexLabel;
+    YaLabel *weightLabel;
+
+    QPushButton *refreshButton;
+    QPushButton *swapButton;
+    QPushButton *closeButton;
 };
 
 #endif //YACARDCOUNTER_TABLESLOT_HPP

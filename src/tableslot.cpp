@@ -20,13 +20,10 @@
 
 // Qt
 #include <QSvgRenderer>
-#include <QFrame>
 #include <QFormLayout>
 #include <QSpinBox>
 #include <QPainter>
 #include <QPushButton>
-#include <QToolButton>
-#include <QDebug>
 #include <QComboBox>
 #include <QCheckBox>
 // KF
@@ -34,9 +31,13 @@
 // own
 #include "tableslot.hpp"
 #include "carddeck.hpp"
+#include "strategy.hpp"
+// own widgets
+#include "widgets/label.hpp"
+#include "widgets/frame.hpp"
 
 void TableSlot::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     if (m_renderer->isValid() && m_renderer->elementExists(svgName)) {
         QPainter painter(this);
@@ -44,104 +45,104 @@ void TableSlot::paintEvent(QPaintEvent *event) {
     }
 }
 
-TableSlot::TableSlot(QSvgRenderer *renderer, QWidget *parent)
+TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
         : QWidget(parent), m_renderer(renderer) {
-    fake = true;
-    svgName = "back";
+    QStringList items = {"Hi-Lo Count", "Hi-Opt I Count", "Hi-Opt II Count", "KO Count"};
 
-    label->setText(i18n("TableSlot Weight: 0"));
-//    label->setFrameStyle(QFrame::HLine);
-    label->setAutoFillBackground(true);
-    label->setPalette(QPalette(Qt::green));
-    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-    label->setAlignment(Qt::AlignCenter);
+    // YaLabels:
+    messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
+    indexLabel = new YaLabel("0/0");
+    weightLabel = new YaLabel("weight: 0");
 
+    // QComboBoxes:
+    auto *strategy = new QComboBox();
+    connect(strategy, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        strategyID = index;
+    });
+    auto *indexing = new QCheckBox();
+    connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
+    auto *training = new QCheckBox();
+    connect(training, &QCheckBox::stateChanged, weightLabel, &YaLabel::setVisible);
 
-    answerFrame = new QFrame();
-//    answerFrame->setFrameStyle(QFrame::HLine);
-    answerFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-    answerFrame->setAutoFillBackground(true);
-    answerFrame->setPalette(QPalette(Qt::gray));
-    QFormLayout *answer = new QFormLayout(answerFrame);
+    // QFrames:
+    answerFrame = new YaFrame();
+    settingsFrame = new YaFrame();
+    settingsFrame->show();
+    controlFrame = new YaFrame();
+
+    // QSpinBoxes:
     weightBox = new QSpinBox();
     weightBox->setRange(-100, 100);
-    answer->addRow(tr("&Weight:"), weightBox);
-    answer->setFormAlignment(Qt::AlignCenter);
-    QPushButton *submit = new QPushButton(i18n("&Submit"));
-    submit->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    connect(submit, &QPushButton::clicked, this, &TableSlot::userChecking);
-    answer->addRow(submit);
 
-
-    settingsFrame = new QFrame();
-    settingsFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-    settingsFrame->setAutoFillBackground(true);
-    settingsFrame->setPalette(QPalette(Qt::gray));
-    QFormLayout *settings = new QFormLayout(settingsFrame);
     deckCount = new QSpinBox();
-    deckCount->setRange(0, 10);
-    deckCount->setValue(0);
-    connect(deckCount, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value) {
-        // Check if the previous value was 0 and the new value is greater than 0
-        if (value > 0 && fake) {
-            deckCount->setMinimum(1);
-            fake = false;
-            controlFrame->show();
-            svgName = "green_back";
-            emit tableSlotActivated();
-        }
-    });
-    settings->addRow(tr("&Number of Card Decks:"), deckCount);
-    settings->setFormAlignment(Qt::AlignCenter);
-    QComboBox *strategy = new QComboBox();
-    QStringList items = {"Hi-Lo", "Hi-Opt I", "Hi-Opt II", "Zen Count"};
-    strategy->addItems(items);
-    settings->addRow(tr("&Type of Strategy:"), strategy);
-    QCheckBox *indexing = new QCheckBox();
-    settings->addRow(indexing, new QLabel("Use card indexing"));
-    QCheckBox *training = new QCheckBox();
-    settings->addRow(training, new QLabel("Is training"));
+    connect(deckCount, QOverload<int>::of(&QSpinBox::valueChanged), this, &TableSlot::activate);
+    deckCount->setRange(isActive, 10);
 
+    // QPushButtons:
+    auto *submitButton = new QPushButton(QIcon::fromTheme("answer"), i18n("&Submit"));
+    submitButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    connect(submitButton, &QPushButton::clicked, this, &TableSlot::userChecking);
 
-    controlFrame = new QFrame();
-//    controlFrame->setFrameStyle(QFrame::HLine);
-    controlFrame->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-    controlFrame->setAutoFillBackground(true);
-    controlFrame->setPalette(QPalette(Qt::gray));
-    QHBoxLayout *controlLayout = new QHBoxLayout(controlFrame);
-    QPushButton *closeButton = new QPushButton();
-    closeButton->setIcon(QIcon::fromTheme("delete"));
+    auto *skipButton = new QPushButton(QIcon::fromTheme("media-skip-forward"), i18n("&Skip"));
+    skipButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+//    connect(skipButton, &QPushButton::clicked, this, &TableSlot::skipping);
+
+    closeButton = new QPushButton(QIcon::fromTheme("delete"), i18n("&Remove"));
     closeButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     connect(closeButton, &QPushButton::clicked, this, &TableSlot::tableSlotRemoved);
-    //    connect(infoButton, &QPushButton::clicked, this, &TableSlot::showInfo);
-    QPushButton *refreshButton = new QPushButton();
-    refreshButton->setIcon(QIcon::fromTheme("view-refresh"));
+    closeButton->hide();
+
+    refreshButton = new QPushButton(QIcon::fromTheme("view-refresh"), i18n("&Reshuffle"));
     refreshButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    QPushButton *swapButton = new QPushButton();
-    swapButton->setIcon(QIcon::fromTheme("exchange-positions"));
+    connect(refreshButton, &QPushButton::clicked, this, &TableSlot::reshuffleDeck);
+    refreshButton->hide();
+
+    swapButton = new QPushButton(QIcon::fromTheme("exchange-positions"), i18n("&Swap"));
     swapButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     connect(swapButton, &QPushButton::clicked, this, &TableSlot::swapTargetSelected);
 
+    // QFormLayouts:
+    auto *settings = new QFormLayout(settingsFrame);
+    settings->setFormAlignment(Qt::AlignCenter);
+    auto *answer = new QFormLayout(answerFrame);
+    answer->setFormAlignment(Qt::AlignCenter);
+
+    // Other Layouts:
+    auto *boxLayout = new QVBoxLayout(this);
+    auto *infoLayout = new QHBoxLayout();
+    auto *controlLayout = new QHBoxLayout(controlFrame);
+
+    infoLayout->addWidget(weightLabel);
+    infoLayout->addStretch();
+    infoLayout->addWidget(indexLabel);
+
+    answer->addRow(tr("&Weight:"), weightBox);
+    answer->addRow(submitButton, skipButton);
+
+    settings->addRow(tr("&Number of Card Decks:"), deckCount);
+    strategy->addItems(items);
+    settings->addRow(tr("&Type of Strategy:"), strategy);
+    settings->addRow(indexing, new QLabel("Use card indexing"));
+    settings->addRow(training, new QLabel("Is training"));
 
     controlLayout->addWidget(closeButton);
     controlLayout->addWidget(refreshButton);
-    refreshButton->hide();
     controlLayout->addWidget(swapButton);
 
-
-    boxLayout = new QVBoxLayout(this);
-    boxLayout->addWidget(label);
+    boxLayout->addStretch();
+    boxLayout->addWidget(messageLabel);
     boxLayout->addWidget(answerFrame);
     boxLayout->addWidget(settingsFrame);
     boxLayout->addWidget(controlFrame);
-    label->hide();
-    answerFrame->hide();
-    controlFrame->hide();
+    boxLayout->addStretch();
+    boxLayout->addLayout(infoLayout);
 }
 
 void TableSlot::onGamePaused(bool paused) {
     if (!settingsFrame->isHidden()) {
         cards = CardDeck::shuffleCards(deckCount->value());
+        refreshButton->show();
+//        swapButton->hide();
         currentCardID = -1;
         settingsFrame->hide();
     }
@@ -165,25 +166,36 @@ void TableSlot::onTableSlotResized(QSize newFixedSize) {
     }
 }
 
-bool TableSlot::isFake() {
+bool TableSlot::isFake() const {
     return fake;
 }
 
-bool TableSlot::pickUpCard() {
+void TableSlot::pickUpCard() {
     if (cards.empty()) {
-        throw std::runtime_error("Deck is empty, cannot pick up another card");
+        svgName = "back";
+        emit tableSlotFinished();
+        settingsFrame->show();
+        controlFrame->show();
+        update();
+        return;
     }
+//    if (CardDeck::isJoker(currentCardID)){
+//        messageLabel->hide();
+//    }
     currentCardID = cards.front();
     svgName = CardDeck::cardName(currentCardID);
     cards.pop_front();
-    if (!label->isHidden()) {
-        label->hide();
+    if (!messageLabel->isHidden()) {
+        messageLabel->hide();
     }
     update();
+    indexLabel->setText(i18n("%1/%2", deckCount->value() * 54 - cards.size(), deckCount->value() * 54));
     if (CardDeck::isJoker(currentCardID)) {
         userQuizzing();
+    } else {
+        currentWeight = Strategy::updateWeight(currentWeight, currentCardID, strategyID);
+        weightLabel->setText(i18n("weight: %1", currentWeight));
     }
-    return cards.empty();
 }
 
 void TableSlot::userQuizzing() {
@@ -192,7 +204,29 @@ void TableSlot::userQuizzing() {
 }
 
 void TableSlot::userChecking() {
-    label->show();
+    messageLabel->setText(i18n("TableSlot Weight: %1", currentWeight));
     answerFrame->hide();
-    emit userAnswered(weightBox->value() == 0);
+    bool isCorrect = weightBox->value() == currentWeight;
+    messageLabel->setPalette(QPalette(isCorrect ? Qt::green : Qt::red));
+    messageLabel->show();
+    emit userAnswered(isCorrect);
+}
+
+void TableSlot::reshuffleDeck() {
+    cards = CardDeck::shuffleCards(deckCount->value());
+}
+
+void TableSlot::onCanRemove(bool canRemove) {
+    closeButton->setVisible(canRemove);
+}
+
+void TableSlot::activate(int value) {
+    if (value > 0 && fake) {
+        fake = false;
+        controlFrame->show();
+        svgName = "green_back";
+        currentWeight = 0;
+        deckCount->setMinimum(1);
+        emit tableSlotActivated();
+    }
 }

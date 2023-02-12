@@ -32,14 +32,13 @@ find_package(KF5KDEGames 7.3.1 REQUIRED)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
-add_compile_options(-fexceptions)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(YaCardCounter_SRCS src/main.cpp src/mainwindow.cpp src/tableslot.cpp src/carddeck.cpp)
+set(YaCardCounter_SRCS src/main.cpp
+        src/mainwindow.cpp src/tableslot.cpp src/carddeck.cpp src/strategy.cpp src/table.cpp
+        src/widgets/label.cpp src/widgets/frame.cpp)
 
 add_executable(YaCardCounter ${YaCardCounter_SRCS})
 

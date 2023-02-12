@@ -18,57 +18,18 @@
  *
 */
 
-#ifndef YACARDCOUNTER_MAINWINDOW_HPP
-#define YACARDCOUNTER_MAINWINDOW_HPP
+#ifndef YACARDCOUNTER_YALABEL_HPP
+#define YACARDCOUNTER_YALABEL_HPP
 
-// KF
-#include <KXmlGuiWindow>
 // Qt
-#include <QPointer>
 #include <QLabel>
 
-class KGameClock;
-
-class KToggleAction;
-
-class Table;
-
-class MainWindow : public KXmlGuiWindow {
+class Q_WIDGETS_EXPORT YaLabel : public QLabel {
 Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
-
-private Q_SLOTS:
-
-    void advanceTime(const QString &);
-
-    void loadSettings();
-
-    void newGame();
-
-    void onGameOver();
-
-    void showHighScores();
-
-    void configureSettings();
-
-    void pauseGame(bool paused);
-
-    void onScoreUpdate(bool inc);
-
-private:
-    void setupActions();
-
-    Table *table;
-
-    KGameClock *m_gameClock = nullptr;
-    KToggleAction *m_actionPause = nullptr;
-
-    QPointer<QLabel> timeLabel = new QLabel;
-    QPointer<QLabel> scoreLabel = new QLabel;
-    QPair<qint32, qint32> score;
+    explicit YaLabel(const QString &text, QWidget *parent = nullptr);
 };
 
 
-#endif //YACARDCOUNTER_MAINWINDOW_HPP
+#endif //YACARDCOUNTER_YALABEL_HPP

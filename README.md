@@ -5,11 +5,9 @@
 ![GitHub issues](https://img.shields.io/github/issues-raw/YaCodeLab/YaCardCounter)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/YaCodeLab/YaCardCounter)
 ![GitHub](https://img.shields.io/github/license/YaCodeLab/YaCardCounter)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ce39cb6968f4ed0a7e187c723cdc5c4)](https://www.codacy.com/gh/YaCodeLab/YaCardCounter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=YaCodeLab/YaCardCounter&amp;utm_campaign=Badge_Grade)
 
-A tool for improving arithmetic skills and memory retention through counting cards in different table-slots with different strategies.
-### Introduction
-
-YaCardCounter is an educational game developed and maintained by YaRiabtsev as part of [YaCodeLab](https://github.com/YaCodeLab) organization. The project aims to improve basic arithmetic skills and memory retention by counting cards in different table-slots with different strategies. The user has the option to use one of the preloaded strategies (Hi-Lo, Hi-Opt I, Hi-Opt II, Zen Count and other) or create their own custom strategy. The game is implemented in C++ with using Qt5, KF5, KF5KDEGames and carddeck packs from kdegames-card-data-kf5.
+**YaCardCounter** is an educational game developed and maintained by YaRiabtsev as part of [YaCodeLab](https://github.com/YaCodeLab) organization. The project aims to improve basic arithmetic skills and memory retention by counting cards in different table-slots with different strategies. The user has the option to use one of the preloaded strategies (Hi-Lo, Hi-Opt I, Hi-Opt II, Zen Count and other) or create their own custom strategy. The game is implemented in C++ with using Qt5, KF5, KF5KDEGames and carddeck packs from kdegames-card-data-kf5.
 ### Gameplay
 
 At the beginning of the game, the user customizes the number of table-slots, and for each table-slot, they can choose the number of standard playing card decks and the strategy. The abstract dealer then picks up one card from one or more table-slots (depending on the level of difficulty). The user must keep track of the sum of the weight of the cards in each table-slot, taking into account the weight assigned to each card in the chosen strategy.
@@ -25,7 +23,7 @@ This project is open for contribution from other people who have more knowledge 
 
 To get involved/development it is recommended to read the documentation and [configure the environment](https://community.kde.org/Get_Involved/development) according to the specified steps.
 
-After that, you can use the following commands to run and install:
+After that, you can use the following commands to install and run:
 ```bash
 cmake -B build/ -DCMAKE_INSTALL_PREFIX=$HOME/kde/usr/
 cmake --build build/
