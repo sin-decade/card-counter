@@ -18,39 +18,18 @@
  *
 */
 
-#ifndef YACARDCOUNTER_CAROUSEL_HPP
-#define YACARDCOUNTER_CAROUSEL_HPP
+#ifndef YACARDCOUNTER_SVGRENDERER_HPP
+#define YACARDCOUNTER_SVGRENDERER_HPP
 
 // Qt
-#include <QWidget>
+#include <QSvgRenderer>
 
-class QHBoxLayout;
-
-class Carousel : public QWidget {
+class YaSvgRenderer : public QSvgRenderer {
 Q_OBJECT
+
 public:
-    explicit Carousel(QSizeF aspectRatio, QWidget *parent = nullptr);
-
-    void addWidget(QWidget *widget);
-
-protected:
-    void resizeEvent(QResizeEvent *event) override;
-
-signals:
-
-    void itemResized(QSize newFixedSize);
-
-private:
-    QVector<QWidget *> widgets;
-    QHBoxLayout *carousel;
-    QSizeF ratio;
-    qint32 columnCount = 0;
-    qint32 idx = 0;
-
-    void updateProps(QSize size);
-
-    void updateLayout(double newScale = -1);
+    explicit YaSvgRenderer(const QString &text, QWidget *parent = nullptr);
 };
 
 
-#endif //YACARDCOUNTER_CAROUSEL_HPP
+#endif //YACARDCOUNTER_SVGRENDERER_HPP

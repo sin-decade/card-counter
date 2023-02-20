@@ -40,7 +40,7 @@ set(YaCardCounter_SRCS src/main.cpp src/mainwindow.cpp
         src/table/table.cpp src/table/tableslot.cpp
         src/strategy/strategyinfo.cpp src/strategy/strategy.cpp
         src/widgets/carousel.cpp src/widgets/cards.cpp
-        src/widgets/base/label.cpp src/widgets/base/frame.cpp)
+        src/widgets/base/label.cpp src/widgets/base/frame.cpp src/widgets/base/svgrenderer.cpp)
 
 add_executable(YaCardCounter ${YaCardCounter_SRCS})
 

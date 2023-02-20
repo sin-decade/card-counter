@@ -22,7 +22,6 @@
 #include <QRandomGenerator>
 #include <QSvgRenderer>
 #include <QPainter>
-#include <QDebug>
 // own
 #include "cards.hpp"
 
@@ -145,22 +144,22 @@ void Cards::paintEvent(QPaintEvent *event) {
     if (m_renderer->isValid() && m_renderer->elementExists(svgName)) {
         QPainter painter(this);
         m_renderer->render(&painter, svgName);
+//        qDebug()<<m_renderer->aspectRatioMode();
 //        if (false) {
 //            painter.setPen(QPen(Qt::red, 5));
 //            painter.drawRoundedRect(rect(), 19, 19);
 //        }
-    } else {
-        qDebug() << m_renderer;
     }
 }
 
 Cards::Cards(QSvgRenderer *renderer, QWidget *parent)
         : QWidget(parent), svgName("back"), currentCardID(-1), m_renderer(renderer) {
+    setFixedSize(renderer->boundsOnElement("back").size().toSize());
 }
 
 void Cards::setId(qint32 id) {
     currentCardID = id;
-//    setName(cardName(currentCardID));
+    setName(cardName(currentCardID));
 }
 
 void Cards::setName(QString name) {
@@ -178,3 +177,9 @@ bool Cards::isJoker() const {
 qint32 Cards::getCurrentRank() const {
     return getRank(currentCardID);
 }
+//
+//void Cards::onResized(QSize newFixedSize) {
+//    if (size() != newFixedSize) {
+//        setFixedSize(newFixedSize);
+//    }
+//}

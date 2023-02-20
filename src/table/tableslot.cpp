@@ -44,15 +44,19 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
     indexLabel = new YaLabel("0/0");
     weightLabel = new YaLabel("weight: 0");
+    auto *strategyHintLabel = new YaLabel(items[strategyID]);
 
     // QComboBoxes:
     auto *strategy = new QComboBox();
     strategy->addItems(items);
     connect(strategy, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         strategyID = index;
+        strategyHintLabel->setText(items[strategyID]);
     });
     auto *indexing = new QCheckBox();
     connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
+    auto *strategyHint = new QCheckBox();
+    connect(strategyHint, &QCheckBox::stateChanged, strategyHintLabel, &YaLabel::setVisible);
     auto *training = new QCheckBox();
     connect(training, &QCheckBox::stateChanged, weightLabel, &YaLabel::setVisible);
 
@@ -122,12 +126,14 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     settings->addRow(tr("&Number of Card Decks:"), deckCount);
     settings->addRow(tr("Type of Strategy:"), strategyLayout);
     settings->addRow(indexing, new QLabel("Use card indexing"));
+    settings->addRow(strategyHint, new QLabel("Add name of strategy"));
     settings->addRow(training, new QLabel("Is training"));
 
     controlLayout->addWidget(closeButton);
     controlLayout->addWidget(refreshButton);
     controlLayout->addWidget(swapButton);
 
+    boxLayout->addWidget(strategyHintLabel);
     boxLayout->addStretch();
     boxLayout->addWidget(messageLabel);
     boxLayout->addWidget(answerFrame);
@@ -159,11 +165,11 @@ void TableSlot::onGamePaused(bool paused) {
     update();
 }
 
-void TableSlot::onTableSlotResized(QSize newFixedSize) {
-    if (size() != newFixedSize) {
-        setFixedSize(newFixedSize);
-    }
-}
+//void TableSlot::onTableSlotResized(QSize newFixedSize) {
+//    if (size() != newFixedSize) {
+//        setFixedSize(newFixedSize);
+//    }
+//}
 
 bool TableSlot::isFake() const {
     return fake;

@@ -21,47 +21,80 @@
 // Qt
 #include <QBoxLayout>
 #include <QPushButton>
-#include <QDebug>
-#include <QLabel>
 // own
 #include "carousel.hpp"
 
-template<typename T>
-Carousel<T>::Carousel(QWidget *parent) : QWidget(parent) {
+Carousel::Carousel(QSizeF aspectRatio, QWidget *parent) : QWidget(parent), ratio(aspectRatio) {
+
     auto *boxLayout = new QHBoxLayout(this);
     auto *carouselBox = new QWidget;
     carouselBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    qDebug() << carouselBox->size();
     carousel = new QHBoxLayout();
-    carousel->addWidget(new QLabel("jhkjsf"));
     carouselBox->setLayout(carousel);
 
     auto *back = new QPushButton();
     back->setIcon(QIcon::fromTheme("draw-arrow-back"));
     back->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
-//    connect(back, &QPushButton::clicked, this, &TableSlot::userChecking);
+    connect(back, &QPushButton::clicked, [=]() {
+        idx = (idx + widgets.size() - 1) % widgets.size();
+        updateLayout();
+    });
 
     auto *next = new QPushButton();
     next->setIcon(QIcon::fromTheme("draw-arrow-forward"));
     next->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
-//    connect(back, &QPushButton::clicked, this, &TableSlot::userChecking);
+    connect(next, &QPushButton::clicked, [=]() {
+        idx = (idx + 1) % widgets.size();
+        updateLayout();
+    });
 
     boxLayout->addWidget(back);
     boxLayout->addStretch();
     boxLayout->addWidget(carouselBox);
     boxLayout->addStretch();
     boxLayout->addWidget(next);
+
+    updateProps(size());
 }
 
-template<typename T>
-void Carousel<T>::resizeEvent(QResizeEvent *event) {
+void Carousel::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
+
+    updateProps(size());
+
 }
 
-template<typename T>
-void Carousel<T>::addWidget(T *widget) {
-    carousel->addWidget(widget);
-    qDebug() << std::type_info(widget) << widget->size() << carousel->count();
-    widget->show();
-    carousel->update();
+void Carousel::addWidget(QWidget *widget) {
+    connect(this, &Carousel::itemResized, [=](QSize newFixedSize) {
+        widget->setFixedSize(newFixedSize);
+        widget->update();
+    });
+    widgets.push_back(widget);
+    updateProps(size());
 }
+
+void Carousel::updateProps(QSize size) {
+    QSizeF itemSize = QSizeF(size.height() * ratio.width() / ratio.height(), size.height());
+    columnCount = qMin(widgets.size(), qint32(size.width() / itemSize.width()));
+    updateLayout(0.9 * size.height() / ratio.height());
+}
+
+void Carousel::updateLayout(double newScale) {
+    while (carousel->count()) {
+        QLayoutItem *item = carousel->takeAt(0);
+        item->widget()->hide();
+        delete item;
+    }
+
+    if (newScale > 0) {
+        QSizeF newFixedSize(ratio.width() * newScale, ratio.height() * newScale);
+        emit itemResized(newFixedSize.toSize());
+    }
+
+    for (qint32 i = 0; i < columnCount; i++) {
+        QWidget *item = widgets[(idx + i) % widgets.size()];
+        carousel->addWidget(item);
+        item->show();
+    }
+}
+

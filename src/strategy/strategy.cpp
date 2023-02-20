@@ -22,7 +22,6 @@
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QLabel>
-#include <QDebug>
 // own
 #include "strategy.hpp"
 #include "src/widgets/carousel.hpp"
@@ -43,15 +42,19 @@ Strategy::Strategy(QSvgRenderer *renderer, bool isNew, QWidget *parent) : QWidge
     browser = new QLabel();
     browser->setWordWrap(true);
     browser->setTextFormat(Qt::TextFormat::MarkdownText);
-    auto *carousel = new Carousel<QLabel>();
-    for (int i = 1; i < 4; i++) {
+//    auto* card1 = new Cards(renderer);
+//    strategy->addWidget(card1);
+    auto *carousel = new Carousel(QSizeF(1, 2));
+    for (int i = 1; i < 14; i++) {
 //        auto *card = new Cards(renderer);
 //        card->setId(i);
 //        qDebug() << card->size();
-        auto * card = new QLabel(QString(i));
-        card->setMovie()
+        auto *card = new Cards(renderer);
+        card->setId(i);
+        card->update();
         carousel->addWidget(card);
     }
+//    carousel->addWidget(card1);
     if (isNew) {
 //        auto *form = new QFormLayout();
 //        auto *nameInput = new QLineEdit();

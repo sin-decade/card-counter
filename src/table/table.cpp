@@ -25,7 +25,6 @@
 #include <QtMath>
 #include <QTimer>
 #include <QRandomGenerator>
-//#include <QDebug>
 // own
 #include "table.hpp"
 #include "tableslot.hpp"
@@ -64,7 +63,7 @@ void Table::addNewTableSlot(bool isActive) {
     connect(tableSlot, &TableSlot::swapTargetSelected, this, &Table::onSwapTargetSelected);
     connect(tableSlot, &TableSlot::strategyInfoAssist, this, &Table::onStrategyInfoAssist);
     connect(this, &Table::gamePaused, tableSlot, &TableSlot::onGamePaused);
-    connect(this, &Table::tableSlotResized, tableSlot, &TableSlot::onTableSlotResized);
+    connect(this, &Table::tableSlotResized, [=](QSize newFixedSize) { tableSlot->setFixedSize(newFixedSize); });
     connect(this, &Table::canRemove, tableSlot, &TableSlot::onCanRemove);
     items.push_back(tableSlot);
 }

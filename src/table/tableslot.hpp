@@ -103,7 +103,7 @@ public Q_SLOTS:
 
     void onGamePaused(bool paused);
 
-    void onTableSlotResized(QSize newFixedSize);
+//    void onTableSlotResized(QSize newFixedSize);
 
     void onCanRemove(bool canRemove);
 
