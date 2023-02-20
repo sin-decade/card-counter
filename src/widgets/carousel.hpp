@@ -18,18 +18,30 @@
  *
 */
 
-#ifndef YACARDCOUNTER_FRAME_HPP
-#define YACARDCOUNTER_FRAME_HPP
+#ifndef YACARDCOUNTER_CAROUSEL_HPP
+#define YACARDCOUNTER_CAROUSEL_HPP
 
 // Qt
-#include <QFrame>
+#include <QWidget>
 
-class Q_WIDGETS_EXPORT YaFrame : public QFrame {
+class QHBoxLayout;
+
+template<typename T>
+class Carousel : public QWidget {
 Q_OBJECT
-
 public:
-    explicit YaFrame(QWidget *parent = nullptr);
+    explicit Carousel(QWidget *parent = nullptr);
+
+    void addWidget(T *widget);
+
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
+private:
+    QVector<T*> _widgets;
+    QHBoxLayout* carousel;
 };
 
 
-#endif //YACARDCOUNTER_FRAME_HPP
+
+#endif //YACARDCOUNTER_CAROUSEL_HPP

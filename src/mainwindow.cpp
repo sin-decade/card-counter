@@ -27,9 +27,10 @@
 // KF
 #include <KLocalizedString>
 #include <KActionCollection>
+#include <KScoreDialog>
 // own
 #include "mainwindow.hpp"
-#include "table.hpp"
+#include "src/table/table.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent) {
     m_gameClock = new KGameClock(this, KGameClock::FlexibleHourMinSec);
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent) {
 
     table = new Table;
     connect(table, &Table::scoreUpdate, this, &MainWindow::onScoreUpdate);
+    connect(table, &Table::gameOver, this, &MainWindow::onGameOver);
 
     setCentralWidget(table);
     setupActions();
@@ -81,7 +83,20 @@ void MainWindow::newGame() {
 }
 
 void MainWindow::onGameOver() {
+    m_gameClock->pause();
+    m_actionPause->setEnabled(false);
+    Kg::difficulty()->setGameRunning(false);
+    QPointer<KScoreDialog> scoreDialog = new KScoreDialog(KScoreDialog::Name | KScoreDialog::Time, this);
+    scoreDialog->initFromDifficulty(Kg::difficulty());
 
+    KScoreDialog::FieldInfo scoreInfo;
+    scoreInfo[KScoreDialog::Score] = i18n("%1/%2", score.first, score.second);
+    scoreInfo[KScoreDialog::Time] = m_gameClock->timeString();
+
+    if (scoreDialog->addScore(scoreInfo, KScoreDialog::LessIsMore) != 0)
+        scoreDialog->exec();
+
+    delete scoreDialog;
 }
 
 void MainWindow::advanceTime(const QString &timeStr) {
@@ -89,7 +104,10 @@ void MainWindow::advanceTime(const QString &timeStr) {
 }
 
 void MainWindow::showHighScores() {
-
+    QPointer<KScoreDialog> scoreDialog = new KScoreDialog(KScoreDialog::Name | KScoreDialog::Time, this);
+    scoreDialog->initFromDifficulty(Kg::difficulty());
+    scoreDialog->exec();
+    delete scoreDialog;
 }
 
 void MainWindow::configureSettings() {

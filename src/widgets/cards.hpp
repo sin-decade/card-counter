@@ -18,14 +18,25 @@
  *
 */
 
-#ifndef YACARDCOUNTER_CARDDECK_HPP
-#define YACARDCOUNTER_CARDDECK_HPP
+#ifndef YACARDCOUNTER_CARDS_HPP
+#define YACARDCOUNTER_CARDS_HPP
 
 // Qt
-#include <QObject>
+#include <QWidget>
 
-class CardDeck {
+class QSvgRenderer;
+
+class Cards : public QWidget {
+Q_OBJECT
 public:
+    explicit Cards(QSvgRenderer *renderer, QWidget *parent = nullptr);
+
+    void paintEvent(QPaintEvent *event) override;
+
+    void setId(qint32 id);
+
+    void setName(QString name);
+
     enum Colour {
         Black = 0, Red
     };
@@ -44,7 +55,11 @@ public:
 
     static QString cardName(qint32 id, qint32 standard = 0);
 
+    QString getCardNameByCurrentId(qint32 standard = 0) const;
+
     static bool isJoker(qint32 id);
+
+    bool isJoker() const;
 
     static QString getColourName(qint32 colour);
 
@@ -54,8 +69,16 @@ public:
 
     static qint32 getRank(qint32 id);
 
+    qint32 getCurrentRank() const;
+
     static qint32 getSuit(qint32 id);
+
+private:
+    QString svgName;
+    qint32 currentCardID;
+
+    QSvgRenderer *m_renderer;
 };
 
 
-#endif //YACARDCOUNTER_CARDDECK_HPP
+#endif //YACARDCOUNTER_CARDS_HPP

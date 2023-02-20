@@ -23,6 +23,8 @@
 
 // Qt
 #include <QWidget>
+// own
+#include "src/widgets/cards.hpp"
 
 class QSvgRenderer;
 
@@ -41,13 +43,11 @@ class YaLabel;
  * one or multiple shuffled deck of playing cards. The slot can be fake (not contain any deck)
  * or activated (contain at least one deck).
  */
-class TableSlot : public QWidget {
+class TableSlot : public Cards {
 Q_OBJECT
 
 public:
     explicit TableSlot(QSvgRenderer *renderer, bool isActive = false, QWidget *parent = nullptr);
-
-    void paintEvent(QPaintEvent *event) override;
 
     bool isFake() const;
 
@@ -97,6 +97,8 @@ signals:
      */
     void swapTargetSelected();
 
+    void strategyInfoAssist();
+
 public Q_SLOTS:
 
     void onGamePaused(bool paused);
@@ -115,13 +117,9 @@ private:
     void userQuizzing();
 
     QList<qint32> cards;
-    QString svgName = "back";
-    qint32 currentCardID;
     qint32 strategyID = 0;
-    qint32 currentWeight;
+    qint32 currentWeight = 0;
     bool fake = true;
-
-    QSvgRenderer *m_renderer;
 
     YaFrame *answerFrame;
     YaFrame *settingsFrame;

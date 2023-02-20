@@ -18,16 +18,18 @@
  *
 */
 
-#ifndef YACARDCOUNTER_STRATEGY_HPP
-#define YACARDCOUNTER_STRATEGY_HPP
+#ifndef YACARDCOUNTER_FRAME_HPP
+#define YACARDCOUNTER_FRAME_HPP
 
 // Qt
-#include <QObject>
+#include <QFrame>
 
-class Strategy {
+class YaFrame : public QFrame {
+Q_OBJECT
+
 public:
-    static qint32 updateWeight(qint32 currentWeight, qint32 cardID, qint32 strategyID);
+    explicit YaFrame(QWidget *parent = nullptr);
 };
 
 
-#endif //YACARDCOUNTER_STRATEGY_HPP
+#endif //YACARDCOUNTER_FRAME_HPP

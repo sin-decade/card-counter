@@ -25,15 +25,18 @@
 #include <QtMath>
 #include <QTimer>
 #include <QRandomGenerator>
+//#include <QDebug>
 // own
 #include "table.hpp"
 #include "tableslot.hpp"
+#include "src/strategy/strategyinfo.hpp"
 
 Table::Table(QWidget *parent) : QWidget(parent) {
     countdown = new QTimer(this);
     connect(countdown, &QTimer::timeout, this, &Table::pickUpCards);
 
     setRenderer("tigullio-international");
+    strategyInfo = new StrategyInfo(renderer);
 
     layout = new QGridLayout();
     setLayout(layout);
@@ -59,6 +62,7 @@ void Table::addNewTableSlot(bool isActive) {
     connect(tableSlot, &TableSlot::userQuizzed, this, &Table::onUserQuizzed);
     connect(tableSlot, &TableSlot::userAnswered, this, &Table::onUserAnswered);
     connect(tableSlot, &TableSlot::swapTargetSelected, this, &Table::onSwapTargetSelected);
+    connect(tableSlot, &TableSlot::strategyInfoAssist, this, &Table::onStrategyInfoAssist);
     connect(this, &Table::gamePaused, tableSlot, &TableSlot::onGamePaused);
     connect(this, &Table::tableSlotResized, tableSlot, &TableSlot::onTableSlotResized);
     connect(this, &Table::canRemove, tableSlot, &TableSlot::onCanRemove);
@@ -68,6 +72,7 @@ void Table::addNewTableSlot(bool isActive) {
 void Table::onTableSlotFinished() {
     auto *tableSlot = qobject_cast<TableSlot *>(sender());
     available.remove(layout->indexOf(tableSlot));
+//    qDebug() << available;
 }
 
 void Table::onTableSlotRemoved() {
@@ -150,6 +155,12 @@ void Table::onSwapTargetSelected() {
 }
 
 void Table::pickUpCards() {
+//    qDebug() << available;
+    if (available.empty()) {
+        countdown->stop();
+        emit gameOver();
+        return;
+    }
     QSet<qint32> picked;
     while (!available.empty() &&
            (picked.size() < tableSlotCountLimit || Kg::difficultyLevel() == KgDifficultyLevel::Custom)) {
@@ -163,6 +174,7 @@ void Table::pickUpCards() {
         }
     }
     available.unite(picked);
+    // emit deHighlighting
     picked.clear();
 }
 
@@ -174,6 +186,7 @@ void Table::setRenderer(const QString &cardTheme) {
 }
 
 void Table::createNewGame(KgDifficultyLevel::StandardLevel level) {
+    countdown->stop();
     launching = true;
     while (!items.empty()) {
         TableSlot *last = items.last();
@@ -237,4 +250,8 @@ void Table::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
     calculateNewColumnCount(size(), bounds.size(), items.count());
+}
+
+void Table::onStrategyInfoAssist() {
+    strategyInfo->show();
 }

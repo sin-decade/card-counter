@@ -18,15 +18,31 @@
  *
 */
 
-// own
-#include "strategy.hpp"
-#include "carddeck.hpp"
+#ifndef YACARDCOUNTER_STRATEGYINFO_HPP
+#define YACARDCOUNTER_STRATEGYINFO_HPP
 
-qint32 Strategy::updateWeight(qint32 currentWeight, qint32 cardID, qint32 strategyID) {
-    const QVector<QVector<qint32>> weights = {{-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Lo Count
-                                              {0,  0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Opt I Count
-                                              {0,  1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2}, // Hi-Opt II Count
-                                              {-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1}, // KO Count
-    };
-    return currentWeight + weights[strategyID][CardDeck::getRank(cardID) - 1];
-}
+// KF
+#include <KPageDialog>
+
+class Strategy;
+
+class QSvgRenderer;
+
+class StrategyInfo : public KPageDialog {
+Q_OBJECT
+public:
+    explicit StrategyInfo(QSvgRenderer *renderer, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+
+    QVector<QString> getStrategiesList();
+
+    Strategy *getStrategyById(qint32 id);
+
+    void showStrategyById(qint32 id);
+
+private:
+    QVector<Strategy *> items;
+    QSvgRenderer *m_renderer;
+};
+
+
+#endif //YACARDCOUNTER_STRATEGYINFO_HPP

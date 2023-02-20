@@ -18,18 +18,40 @@
  *
 */
 
-#ifndef YACARDCOUNTER_YALABEL_HPP
-#define YACARDCOUNTER_YALABEL_HPP
+#ifndef YACARDCOUNTER_STRATEGY_HPP
+#define YACARDCOUNTER_STRATEGY_HPP
 
 // Qt
-#include <QLabel>
+#include <QWidget>
 
-class Q_WIDGETS_EXPORT YaLabel : public QLabel {
+class QTextEdit;
+
+class QLabel;
+
+class QSvgRenderer;
+
+class Strategy : public QWidget {
 Q_OBJECT
-
 public:
-    explicit YaLabel(const QString &text, QWidget *parent = nullptr);
+    explicit Strategy(QSvgRenderer *renderer, bool isNew = false, QWidget *parent = nullptr);
+
+    void setName(QString name);
+
+    QString getName();
+
+    void setDescription(QString description);
+
+    static qint32 updateWeight(qint32 currentWeight, qint32 rank, qint32 strategyID);
+
+    void setWeights(QVector<qint32> weights);
+
+private:
+    QVector<qint32> _weights;
+    QString _name;
+    QString _description;
+
+    QLabel *browser;
 };
 
 
-#endif //YACARDCOUNTER_YALABEL_HPP
+#endif //YACARDCOUNTER_STRATEGY_HPP

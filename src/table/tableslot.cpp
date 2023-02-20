@@ -30,23 +30,14 @@
 #include <KLocalizedString>
 // own
 #include "tableslot.hpp"
-#include "carddeck.hpp"
-#include "strategy.hpp"
+#include "src/widgets/cards.hpp"
+#include "src/strategy/strategy.hpp"
 // own widgets
-#include "widgets/label.hpp"
-#include "widgets/frame.hpp"
-
-void TableSlot::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event)
-
-    if (m_renderer->isValid() && m_renderer->elementExists(svgName)) {
-        QPainter painter(this);
-        m_renderer->render(&painter, svgName);
-    }
-}
+#include "src/widgets/base/label.hpp"
+#include "src/widgets/base/frame.hpp"
 
 TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
-        : QWidget(parent), m_renderer(renderer) {
+        : Cards(renderer, parent) {
     QStringList items = {"Hi-Lo Count", "Hi-Opt I Count", "Hi-Opt II Count", "KO Count"};
 
     // YaLabels:
@@ -56,6 +47,7 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
 
     // QComboBoxes:
     auto *strategy = new QComboBox();
+    strategy->addItems(items);
     connect(strategy, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         strategyID = index;
     });
@@ -85,7 +77,11 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
 
     auto *skipButton = new QPushButton(QIcon::fromTheme("media-skip-forward"), i18n("&Skip"));
     skipButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-//    connect(skipButton, &QPushButton::clicked, this, &TableSlot::skipping);
+// todo:    connect(skipButton, &QPushButton::clicked, this, &TableSlot::skipping);
+
+    auto *strategyInfoButton = new QPushButton(QIcon::fromTheme("kt-info-widget"), i18n("&Info"));
+    strategyInfoButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    connect(strategyInfoButton, &QPushButton::clicked, this, &TableSlot::strategyInfoAssist);
 
     closeButton = new QPushButton(QIcon::fromTheme("delete"), i18n("&Remove"));
     closeButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -111,6 +107,10 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     auto *boxLayout = new QVBoxLayout(this);
     auto *infoLayout = new QHBoxLayout();
     auto *controlLayout = new QHBoxLayout(controlFrame);
+    auto *strategyLayout = new QHBoxLayout();
+
+    strategyLayout->addWidget(strategy);
+    strategyLayout->addWidget(strategyInfoButton);
 
     infoLayout->addWidget(weightLabel);
     infoLayout->addStretch();
@@ -120,8 +120,7 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     answer->addRow(submitButton, skipButton);
 
     settings->addRow(tr("&Number of Card Decks:"), deckCount);
-    strategy->addItems(items);
-    settings->addRow(tr("&Type of Strategy:"), strategy);
+    settings->addRow(tr("Type of Strategy:"), strategyLayout);
     settings->addRow(indexing, new QLabel("Use card indexing"));
     settings->addRow(training, new QLabel("Is training"));
 
@@ -140,20 +139,20 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
 
 void TableSlot::onGamePaused(bool paused) {
     if (!settingsFrame->isHidden()) {
-        cards = CardDeck::shuffleCards(deckCount->value());
+        cards = shuffleCards(deckCount->value());
         refreshButton->show();
 //        swapButton->hide();
-        currentCardID = -1;
+        setId(-1);
         settingsFrame->hide();
     }
     if (paused) {
         answerFrame->hide();
-        svgName = "blue_back";
+        setName("blue_back");
         controlFrame->show();
     } else {
         controlFrame->hide();
-        if (CardDeck::isJoker(currentCardID)) {
-            svgName = CardDeck::cardName(currentCardID);
+        if (isJoker()) {
+            setName(getCardNameByCurrentId());
             userQuizzing();
         }
     }
@@ -172,30 +171,31 @@ bool TableSlot::isFake() const {
 
 void TableSlot::pickUpCard() {
     if (cards.empty()) {
-        svgName = "back";
+        setName("back");
         emit tableSlotFinished();
         settingsFrame->show();
         controlFrame->show();
         update();
         return;
     }
-//    if (CardDeck::isJoker(currentCardID)){
+//    if (isJoker()){
 //        messageLabel->hide();
 //    }
-    currentCardID = cards.front();
-    svgName = CardDeck::cardName(currentCardID);
+    setId(cards.front());
+    setName(getCardNameByCurrentId());
     cards.pop_front();
     if (!messageLabel->isHidden()) {
         messageLabel->hide();
     }
     update();
     indexLabel->setText(i18n("%1/%2", deckCount->value() * 54 - cards.size(), deckCount->value() * 54));
-    if (CardDeck::isJoker(currentCardID)) {
+    if (isJoker()) {
         userQuizzing();
     } else {
-        currentWeight = Strategy::updateWeight(currentWeight, currentCardID, strategyID);
+        currentWeight = Strategy::updateWeight(currentWeight, getCurrentRank(), strategyID);
         weightLabel->setText(i18n("weight: %1", currentWeight));
     }
+    // add highlighting
 }
 
 void TableSlot::userQuizzing() {
@@ -213,7 +213,9 @@ void TableSlot::userChecking() {
 }
 
 void TableSlot::reshuffleDeck() {
-    cards = CardDeck::shuffleCards(deckCount->value());
+    cards = shuffleCards(deckCount->value());
+    settingsFrame->hide();
+    // hide controlFrame if not paused
 }
 
 void TableSlot::onCanRemove(bool canRemove) {
@@ -224,7 +226,7 @@ void TableSlot::activate(int value) {
     if (value > 0 && fake) {
         fake = false;
         controlFrame->show();
-        svgName = "green_back";
+        setName("green_back");
         currentWeight = 0;
         deckCount->setMinimum(1);
         emit tableSlotActivated();
