@@ -33,7 +33,7 @@ qint32 Strategy::updateWeight(qint32 currentWeight, qint32 rank) {
     return currentWeight + _weights[rank - 1]->value();
 }
 
-Strategy::Strategy(QSvgRenderer *renderer, bool isNew, QWidget *parent) : QWidget(parent) {
+Strategy::Strategy(QSvgRenderer *renderer, bool custom, QWidget *parent) : QWidget(parent) {
     auto *strategy = new QVBoxLayout(this);
     browser = new QLabel();
     browser->setWordWrap(true);
@@ -47,13 +47,13 @@ Strategy::Strategy(QSvgRenderer *renderer, bool isNew, QWidget *parent) : QWidge
         auto *form = new QFormLayout(card);
         _weights.push_back(new QSpinBox());
         _weights.last()->setRange(-5, 5);
-        _weights.last()->setReadOnly(!isNew);
+        _weights.last()->setReadOnly(!custom);
         _weights.last()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         form->setFormAlignment(Qt::AlignCenter);
         form->addRow(_weights.last());
         carousel->addWidget(card);
     }
-    if (isNew) {
+    if (custom) {
 //        auto *form = new QFormLayout();
 //        auto *nameInput = new QLineEdit();
 //        auto *descriptionArea = new QTextEdit();
@@ -70,9 +70,8 @@ void Strategy::setName(QString name) {
     _name = std::move(name);
 }
 
-void Strategy::setDescription(QString description) {
-    _description = std::move(description);
-    browser->setText(_description);
+void Strategy::setDescription(const QString& description) {
+    browser->setText(description);
 }
 
 QString Strategy::getName() {
