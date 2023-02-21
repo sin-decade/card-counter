@@ -24,7 +24,7 @@
 // Qt
 #include <QLabel>
 
-class Q_WIDGETS_EXPORT YaLabel : public QLabel {
+class YaLabel : public QLabel {
 Q_OBJECT
 
 public:

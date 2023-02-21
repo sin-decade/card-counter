@@ -18,15 +18,18 @@
  *
 */
 
-// own
-#include "strategy.hpp"
-#include "carddeck.hpp"
+#ifndef YACARDCOUNTER_FRAME_HPP
+#define YACARDCOUNTER_FRAME_HPP
 
-qint32 Strategy::updateWeight(qint32 currentWeight, qint32 cardID, qint32 strategyID) {
-    const QVector<QVector<qint32>> weights = {{-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Lo Count
-                                              {0,  0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Opt I Count
-                                              {0,  1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2}, // Hi-Opt II Count
-                                              {-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1}, // KO Count
-    };
-    return currentWeight + weights[strategyID][CardDeck::getRank(cardID) - 1];
-}
+// Qt
+#include <QFrame>
+
+class YaFrame : public QFrame {
+Q_OBJECT
+
+public:
+    explicit YaFrame(QWidget *parent = nullptr);
+};
+
+
+#endif //YACARDCOUNTER_FRAME_HPP

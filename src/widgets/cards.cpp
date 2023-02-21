@@ -20,33 +20,39 @@
 
 // Qt
 #include <QRandomGenerator>
+#include <QSvgRenderer>
+#include <QPainter>
 // own
-#include "carddeck.hpp"
+#include "cards.hpp"
 
-QList<qint32> CardDeck::shuffleCards(qint32 deckCount, qint32 shuffleCoefficient) {
+QList<qint32> Cards::shuffleCards(qint32 deckCount, qint32 shuffleCoefficient) {
     QList<qint32> deck = generateDeck(deckCount);
     qint32 threshold = deck.size() / (deckCount * shuffleCoefficient);
+    bool flag;
 
-    while (true) {
+    do {
+        flag = false;
         std::shuffle(deck.begin(), deck.end(), *QRandomGenerator::global());
         qint32 lastJokerIndex = -1;
         for (int i = 0; i < deck.size(); i++) {
-            if (!getRank(deck[i])) {
-                if (i - lastJokerIndex < threshold)
-                    continue;
+            if (isJoker(deck[i])) {
+                if (i - lastJokerIndex < threshold) {
+                    flag = true;
+                    break;
+                }
                 lastJokerIndex = i;
             }
         }
-        break;
-    }
+    } while (flag);
 
     return deck;
 }
 
-QString CardDeck::cardName(qint32 id, qint32 standard) {
+QString Cards::cardName(qint32 id, qint32 standard) {
     qint32 rank = getRank(id);
     qint32 suit = getSuit(id);
     QString name = getRankName(rank, standard & 1);
+
     if (isJoker(id)) {
         name = getColourName(suit) + name;
     } else {
@@ -56,7 +62,7 @@ QString CardDeck::cardName(qint32 id, qint32 standard) {
     return name;
 }
 
-QList<qint32> CardDeck::generateDeck(qint32 deckCount) {
+QList<qint32> Cards::generateDeck(qint32 deckCount) {
     QList<qint32> deck;
     for (qint32 i = 0; i < deckCount; i++) {
         for (qint32 rank = Rank::Ace; rank <= Rank::King; rank++) {
@@ -71,7 +77,7 @@ QList<qint32> CardDeck::generateDeck(qint32 deckCount) {
     return deck;
 }
 
-QString CardDeck::getColourName(qint32 colour) {
+QString Cards::getColourName(qint32 colour) {
     switch (colour) {
         case Black:
             return QStringLiteral("black_");
@@ -82,7 +88,7 @@ QString CardDeck::getColourName(qint32 colour) {
     }
 }
 
-QString CardDeck::getSuitName(qint32 suit) {
+QString Cards::getSuitName(qint32 suit) {
     switch (suit) {
         case Clubs:
             return QStringLiteral("_club");
@@ -97,7 +103,7 @@ QString CardDeck::getSuitName(qint32 suit) {
     }
 }
 
-QString CardDeck::getRankName(qint32 rank, bool standard) {
+QString Cards::getRankName(qint32 rank, bool standard) {
     switch (rank) {
         case King:
             return QStringLiteral("king");
@@ -120,14 +126,60 @@ QString CardDeck::getRankName(qint32 rank, bool standard) {
     }
 }
 
-bool CardDeck::isJoker(qint32 id) {
+bool Cards::isJoker(qint32 id) {
     return !getRank(id);
 }
 
-qint32 CardDeck::getRank(qint32 id) {
+qint32 Cards::getRank(qint32 id) {
     return Rank(id & 0xff);
 }
 
-qint32 CardDeck::getSuit(qint32 id) {
+qint32 Cards::getSuit(qint32 id) {
     return (id >> 8) & 0xff;
 }
+
+void Cards::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event)
+
+    if (m_renderer->isValid() && m_renderer->elementExists(svgName)) {
+        QPainter painter(this);
+        m_renderer->render(&painter, svgName);
+//        qDebug()<<m_renderer->aspectRatioMode();
+//        if (false) {
+//            painter.setPen(QPen(Qt::red, 5));
+//            painter.drawRoundedRect(rect(), 19, 19);
+//        }
+    }
+}
+
+Cards::Cards(QSvgRenderer *renderer, QWidget *parent)
+        : QWidget(parent), svgName("back"), currentCardID(-1), m_renderer(renderer) {
+    setFixedSize(renderer->boundsOnElement("back").size().toSize());
+}
+
+void Cards::setId(qint32 id) {
+    currentCardID = id;
+    setName(cardName(currentCardID));
+}
+
+void Cards::setName(QString name) {
+    svgName = std::move(name);
+}
+
+QString Cards::getCardNameByCurrentId(qint32 standard) const {
+    return cardName(currentCardID, standard);
+}
+
+bool Cards::isJoker() const {
+    return isJoker(currentCardID);
+}
+
+qint32 Cards::getCurrentRank() const {
+    return getRank(currentCardID);
+}
+//
+//void Cards::onResized(QSize newFixedSize) {
+//    if (size() != newFixedSize) {
+//        setFixedSize(newFixedSize);
+//    }
+//}

@@ -23,6 +23,8 @@
 
 // Qt
 #include <QWidget>
+// own
+#include "src/widgets/cards.hpp"
 
 class QSvgRenderer;
 
@@ -36,18 +38,19 @@ class YaFrame;
 
 class YaLabel;
 
+class Strategy;
+
 /*!
  * \brief The TableSlot class represents the slot on a table that can contain
  * one or multiple shuffled deck of playing cards. The slot can be fake (not contain any deck)
  * or activated (contain at least one deck).
  */
-class TableSlot : public QWidget {
+class TableSlot : public Cards {
 Q_OBJECT
 
 public:
-    explicit TableSlot(QSvgRenderer *renderer, bool isActive = false, QWidget *parent = nullptr);
-
-    void paintEvent(QPaintEvent *event) override;
+    explicit TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, bool isActive = false,
+                       QWidget *parent = nullptr);
 
     bool isFake() const;
 
@@ -97,11 +100,11 @@ signals:
      */
     void swapTargetSelected();
 
+    void strategyInfoAssist();
+
 public Q_SLOTS:
 
     void onGamePaused(bool paused);
-
-    void onTableSlotResized(QSize newFixedSize);
 
     void onCanRemove(bool canRemove);
 
@@ -115,13 +118,9 @@ private:
     void userQuizzing();
 
     QList<qint32> cards;
-    QString svgName = "back";
-    qint32 currentCardID;
-    qint32 strategyID = 0;
-    qint32 currentWeight;
+    Strategy* _strategy;
+    qint32 currentWeight = 0;
     bool fake = true;
-
-    QSvgRenderer *m_renderer;
 
     YaFrame *answerFrame;
     YaFrame *settingsFrame;

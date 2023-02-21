@@ -18,18 +18,31 @@
  *
 */
 
-#ifndef YACARDCOUNTER_FRAME_HPP
-#define YACARDCOUNTER_FRAME_HPP
+#ifndef YACARDCOUNTER_STRATEGYINFO_HPP
+#define YACARDCOUNTER_STRATEGYINFO_HPP
 
-// Qt
-#include <QFrame>
+// KF
+#include <KPageDialog>
 
-class Q_WIDGETS_EXPORT YaFrame : public QFrame {
+class Strategy;
+
+class QSvgRenderer;
+
+class StrategyInfo : public KPageDialog {
 Q_OBJECT
-
 public:
-    explicit YaFrame(QWidget *parent = nullptr);
+    explicit StrategyInfo(QSvgRenderer *renderer, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
+
+    Strategy *getStrategyById(qint32 id);
+
+    void showStrategyById(qint32 id);
+
+    QVector<Strategy *> getStrategies();
+
+private:
+    QVector<Strategy *> items;
+    QSvgRenderer *m_renderer;
 };
 
 
-#endif //YACARDCOUNTER_FRAME_HPP
+#endif //YACARDCOUNTER_STRATEGYINFO_HPP

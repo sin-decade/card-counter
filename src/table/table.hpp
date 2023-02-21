@@ -32,7 +32,9 @@ class QSvgRenderer;
 
 class TableSlot;
 
-class Q_WIDGETS_EXPORT Table : public QWidget {
+class StrategyInfo;
+
+class Table : public QWidget {
 Q_OBJECT
 public:
     explicit Table(QWidget *parent = nullptr);
@@ -57,6 +59,8 @@ signals:
 
     void scoreUpdate(bool inc);
 
+    void gameOver();
+
 private Q_SLOTS:
 
     void onTableSlotActivated();
@@ -75,6 +79,8 @@ private Q_SLOTS:
 
     void pickUpCards();
 
+    void onStrategyInfoAssist();
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
@@ -88,6 +94,7 @@ private:
     QSvgRenderer *renderer{};
     QRectF bounds;
     QTimer *countdown;
+    StrategyInfo *strategyInfo;
 
     bool launching{};
     qint32 columnCount = -1;

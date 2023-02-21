@@ -35,9 +35,9 @@ int main(int argc, char *argv[]) {
             QStringLiteral("yacardcounter"),
             i18n("YaCardCounter"),
             QStringLiteral("1.0"),
-            i18n("A memory and basic arithmetic practice game that "
-                 "uses the popular card game of blackjack as an example."),
-            KAboutLicense::GPL,
+            i18n("A tool for improving arithmetic skills and memory retention "
+                 "through counting cards in different table-slots with different strategies. "),
+            KAboutLicense::GPL_V3,
             i18n("(c) 2023, Yaroslav Riabtsev"),
             QString(),
             QStringLiteral("https://github.com/YaCodeLab/YaCardCounter"),
@@ -55,8 +55,8 @@ int main(int argc, char *argv[]) {
     parser.process(app);
     aboutData.processCommandLine(&parser);
 
-    MainWindow *window = new MainWindow();
+    auto *window = new MainWindow();
     window->show();
 
-    return app.exec();
+    return QApplication::exec();
 }
