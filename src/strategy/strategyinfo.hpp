@@ -33,11 +33,11 @@ Q_OBJECT
 public:
     explicit StrategyInfo(QSvgRenderer *renderer, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
-    QVector<QString> getStrategiesList();
-
     Strategy *getStrategyById(qint32 id);
 
     void showStrategyById(qint32 id);
+
+    QVector<Strategy *> getStrategies();
 
 private:
     QVector<Strategy *> items;

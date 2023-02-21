@@ -65,7 +65,7 @@ void Carousel::resizeEvent(QResizeEvent *event) {
 }
 
 void Carousel::addWidget(QWidget *widget) {
-    connect(this, &Carousel::itemResized, [=](QSize newFixedSize) {
+    connect(this, &Carousel::itemResized, widget, [widget](QSize newFixedSize) {
         widget->setFixedSize(newFixedSize);
         widget->update();
     });

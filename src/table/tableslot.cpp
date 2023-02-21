@@ -36,22 +36,26 @@
 #include "src/widgets/base/label.hpp"
 #include "src/widgets/base/frame.hpp"
 
-TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
-        : Cards(renderer, parent) {
-    QStringList items = {"Hi-Lo Count", "Hi-Opt I Count", "Hi-Opt II Count", "KO Count"};
+TableSlot::TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, bool isActive, QWidget *parent)
+        : Cards(renderer, parent), _strategy(strategies[0]) {
+
+    QStringList items;
+    for (auto *item: strategies) {
+        items.push_back(item->getName());
+    }
 
     // YaLabels:
     messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
     indexLabel = new YaLabel("0/0");
     weightLabel = new YaLabel("weight: 0");
-    auto *strategyHintLabel = new YaLabel(items[strategyID]);
+    auto *strategyHintLabel = new YaLabel(items[0]);
 
     // QComboBoxes:
-    auto *strategy = new QComboBox();
-    strategy->addItems(items);
-    connect(strategy, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
-        strategyID = index;
-        strategyHintLabel->setText(items[strategyID]);
+    auto *strategyBox = new QComboBox();
+    strategyBox->addItems(items);
+    connect(strategyBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        _strategy = strategies[index];
+        strategyHintLabel->setText(items[index]);
     });
     auto *indexing = new QCheckBox();
     connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
@@ -113,7 +117,7 @@ TableSlot::TableSlot(QSvgRenderer *renderer, bool isActive, QWidget *parent)
     auto *controlLayout = new QHBoxLayout(controlFrame);
     auto *strategyLayout = new QHBoxLayout();
 
-    strategyLayout->addWidget(strategy);
+    strategyLayout->addWidget(strategyBox);
     strategyLayout->addWidget(strategyInfoButton);
 
     infoLayout->addWidget(weightLabel);
@@ -198,7 +202,7 @@ void TableSlot::pickUpCard() {
     if (isJoker()) {
         userQuizzing();
     } else {
-        currentWeight = Strategy::updateWeight(currentWeight, getCurrentRank(), strategyID);
+        currentWeight = _strategy->updateWeight(currentWeight, getCurrentRank());
         weightLabel->setText(i18n("weight: %1", currentWeight));
     }
     // add highlighting

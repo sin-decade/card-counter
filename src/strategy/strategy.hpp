@@ -24,11 +24,11 @@
 // Qt
 #include <QWidget>
 
-class QTextEdit;
-
 class QLabel;
 
 class QSvgRenderer;
+
+class QSpinBox;
 
 class Strategy : public QWidget {
 Q_OBJECT
@@ -41,12 +41,12 @@ public:
 
     void setDescription(QString description);
 
-    static qint32 updateWeight(qint32 currentWeight, qint32 rank, qint32 strategyID);
+    qint32 updateWeight(qint32 currentWeight, qint32 rank);
 
     void setWeights(QVector<qint32> weights);
 
 private:
-    QVector<qint32> _weights;
+    QVector<QSpinBox *> _weights;
     QString _name;
     QString _description;
 

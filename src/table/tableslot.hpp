@@ -38,6 +38,8 @@ class YaFrame;
 
 class YaLabel;
 
+class Strategy;
+
 /*!
  * \brief The TableSlot class represents the slot on a table that can contain
  * one or multiple shuffled deck of playing cards. The slot can be fake (not contain any deck)
@@ -47,7 +49,8 @@ class TableSlot : public Cards {
 Q_OBJECT
 
 public:
-    explicit TableSlot(QSvgRenderer *renderer, bool isActive = false, QWidget *parent = nullptr);
+    explicit TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, bool isActive = false,
+                       QWidget *parent = nullptr);
 
     bool isFake() const;
 
@@ -103,8 +106,6 @@ public Q_SLOTS:
 
     void onGamePaused(bool paused);
 
-//    void onTableSlotResized(QSize newFixedSize);
-
     void onCanRemove(bool canRemove);
 
     void userChecking();
@@ -117,7 +118,7 @@ private:
     void userQuizzing();
 
     QList<qint32> cards;
-    qint32 strategyID = 0;
+    Strategy* _strategy;
     qint32 currentWeight = 0;
     bool fake = true;
 

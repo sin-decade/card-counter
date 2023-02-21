@@ -29,30 +29,73 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
     setWindowTitle("Strategy Info");
     setModal(true);
 
-    const QVector<QVector<qint32>> weights = {{-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Lo Count
-                                              {0,  0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Opt I Count
-                                              {0,  1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2}, // Hi-Opt II Count
-                                              {-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1}, // KO Count
-    };
-    const QVector<QString> names = {"Hi-Lo Count", "Hi-Opt I Count", "Hi-Opt II Count", "KO Count"};
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("Hi-Lo Count");
+    items.last()->setDescription(
+            "The Hi-Lo blackjack card counting system was first introduced by Harvey Dubner in 1963. Dubner's goal was "
+            "to create a simple yet effective system that could be used by anyone to increase their odds of winning "
+            "at blackjack.");
+    items.last()->setWeights({-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1});
 
-    for (int i = 0; i < weights.size(); i++) {
-        auto *strategy = new Strategy(m_renderer);
-        strategy->setName(names[i]);
-        strategy->setDescription(
-                "The **Hi-Opt II** (Hi Opt 2) blackjack card counting system, the more advanced of the high optimum card counting systems, is a card counting strategy that is designed for use by much more advanced blackjack players . This system is actually far more complicated than the Hi-Opt I strategy and should only be used by seasoned professionals.\n\nThe actual extra player advantage that you get from using the Hi-Opt II card counting system, as opposed to simpler card counting systems, is very small. We don't recommend trying to learn the Hi-Opt II system until you have completely mastered the Hi-Opt I system and truly feel that you want the small extra edge that this system provides.");
-        strategy->setWeights(weights[i]);
-        addPage(strategy, names[i]);
-        items.push_back(strategy);
-    }
-}
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("Hi-Opt I Count");
+    items.last()->setDescription(
+            "The Hi-Opt I blackjack card counting system was developed by Charles Einstein and introduced in his book "
+            "\"The World's Greatest Blackjack Book\" in 1980. The Hi-Opt I system assigns point values to each card in "
+            "the deck and is a more complex system than the Hi-Lo system, with additional point values for some cards. "
+            "It is considered a more powerful system than the Hi-Lo, but also more difficult to learn "
+            "and use effectively.");
+    items.last()->setWeights({0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1});
 
-QVector<QString> StrategyInfo::getStrategiesList() {
-    QVector<QString> list;
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("Hi-Opt II Count");
+    items.last()->setDescription(
+            "The Hi-Opt II blackjack card counting system is a more advanced version of the Hi-Opt I system, "
+            "developed by Lance Humble and Carl Cooper in their book \"The World's Greatest Blackjack Book\" in 1980. "
+            "The Hi-Opt II system assigns point values to each card in the deck, with additional point values "
+            "for some cards, and is considered one of the most powerful card counting systems. It is also one of "
+            "the most difficult to learn and use effectively.");
+    items.last()->setWeights({0, 1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2});
+
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("KO Count");
+    items.last()->setDescription(
+            "The Knock-Out (KO) blackjack card counting system was developed by Olaf Vancura and Ken Fuchs in their "
+            "book \"Knock-Out Blackjack\" in 1998. The KO system assigns point values to each card in the deck, with "
+            "the additional advantage that it does not require a true count conversion for betting, making it easier "
+            "to use than some other systems.");
+    items.last()->setWeights({-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1});
+
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("Omega II Count");
+    items.last()->setDescription(
+            "The Omega II blackjack card counting system was developed by Bryce Carlson and introduced in his book "
+            "\"Blackjack for Blood\" in 2001. The Omega II system assigns point values to each card in the deck, with "
+            "additional point values for some cards, and is considered one of the most powerful card counting systems, "
+            "especially for multi-deck games.");
+    items.last()->setWeights({0, 1, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2, -2});
+
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("Zen Count");
+    items.last()->setDescription(
+            "The Zen Count blackjack card counting system was developed by Arnold Snyder and introduced in his book "
+            "\"Blackbelt in Blackjack\" in 1983. The Zen Count system assigns point values to each card in the deck, "
+            "with additional point values for some cards, and is considered a powerful system for both single "
+            "and multi-deck games.");
+    items.last()->setWeights({-1, 1, 1, 2, 2, 2, 1, 0, 0, -2, -2, -2, -2});
+
+    items.push_back(new Strategy(m_renderer));
+    items.last()->setName("10 Count");
+    items.last()->setDescription(
+            "The 10 Count blackjack card counting system was developed by Edward O. Thorp, a mathematician and author "
+            "of the classic book \"Beat the Dealer\" in 1962. The 10 Count system assigns point values to each card in "
+            "the deck, with a focus on the 10-value cards, and is considered one of the earliest "
+            "and most basic card counting systems.");
+    items.last()->setWeights({1, 1, 1, 1, 1, 1, 1, 1, 1, -2, -2, -2, -2});
+
     for (auto *item: items) {
-        list.push_back(item->getName());
+        addPage(item, item->getName());
     }
-    return list;
 }
 
 Strategy *StrategyInfo::getStrategyById(qint32 id) {
@@ -61,6 +104,10 @@ Strategy *StrategyInfo::getStrategyById(qint32 id) {
 
 void StrategyInfo::showStrategyById(qint32 id) {
     setCurrentPage(reinterpret_cast<KPageWidgetItem *>(getStrategyById(id)));
+}
+
+QVector<Strategy *> StrategyInfo::getStrategies() {
+    return items;
 }
 
 

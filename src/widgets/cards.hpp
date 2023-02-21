@@ -73,9 +73,6 @@ public:
 
     static qint32 getSuit(qint32 id);
 
-//public Q_SLOTS:
-//    void onResized(QSize newFixedSize);
-
 private:
     QString svgName;
     qint32 currentCardID;

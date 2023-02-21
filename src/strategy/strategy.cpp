@@ -22,39 +22,37 @@
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QLabel>
+#include <QSpinBox>
+#include <QFormLayout>
 // own
 #include "strategy.hpp"
 #include "src/widgets/carousel.hpp"
 #include "src/widgets/cards.hpp"
 
-qint32 Strategy::updateWeight(qint32 currentWeight, qint32 rank, qint32 strategyID) {
-    const QVector<QVector<qint32>> weights = {{-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Lo Count
-                                              {0,  0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}, // Hi-Opt I Count
-                                              {0,  1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2}, // Hi-Opt II Count
-                                              {-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1}, // KO Count
-    };
-    return currentWeight + weights[strategyID][rank - 1];
+qint32 Strategy::updateWeight(qint32 currentWeight, qint32 rank) {
+    return currentWeight + _weights[rank - 1]->value();
 }
 
 Strategy::Strategy(QSvgRenderer *renderer, bool isNew, QWidget *parent) : QWidget(parent) {
     auto *strategy = new QVBoxLayout(this);
-    _weights = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     browser = new QLabel();
     browser->setWordWrap(true);
     browser->setTextFormat(Qt::TextFormat::MarkdownText);
-//    auto* card1 = new Cards(renderer);
-//    strategy->addWidget(card1);
-    auto *carousel = new Carousel(QSizeF(1, 2));
-    for (int i = 1; i < 14; i++) {
-//        auto *card = new Cards(renderer);
-//        card->setId(i);
-//        qDebug() << card->size();
+    browser->setOpenExternalLinks(true);
+
+    auto *carousel = new Carousel(QSizeF(3, 4));
+    for (int i = Cards::Rank::Ace; i <= Cards::Rank::King; i++) {
         auto *card = new Cards(renderer);
         card->setId(i);
-        card->update();
+        auto *form = new QFormLayout(card);
+        _weights.push_back(new QSpinBox());
+        _weights.last()->setRange(-5, 5);
+        _weights.last()->setReadOnly(!isNew);
+        _weights.last()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        form->setFormAlignment(Qt::AlignCenter);
+        form->addRow(_weights.last());
         carousel->addWidget(card);
     }
-//    carousel->addWidget(card1);
     if (isNew) {
 //        auto *form = new QFormLayout();
 //        auto *nameInput = new QLineEdit();
@@ -82,6 +80,9 @@ QString Strategy::getName() {
 }
 
 void Strategy::setWeights(QVector<qint32> weights) {
-    _weights = std::move(weights);
-//    carousel->setWeights(_weights);
+    Q_ASSERT(weights.size() <= _weights.size());
+
+    for (int i = 0; i < weights.size(); i++) {
+        _weights[i]->setValue(weights[i]);
+    }
 }

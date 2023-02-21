@@ -50,7 +50,7 @@ void Table::onTableSlotActivated() {
 }
 
 void Table::addNewTableSlot(bool isActive) {
-    auto *tableSlot = new TableSlot(renderer, isActive, this);
+    auto *tableSlot = new TableSlot(strategyInfo->getStrategies(), renderer, isActive, this);
     if (isActive) {
         available.insert(items.size());
     }
@@ -63,7 +63,8 @@ void Table::addNewTableSlot(bool isActive) {
     connect(tableSlot, &TableSlot::swapTargetSelected, this, &Table::onSwapTargetSelected);
     connect(tableSlot, &TableSlot::strategyInfoAssist, this, &Table::onStrategyInfoAssist);
     connect(this, &Table::gamePaused, tableSlot, &TableSlot::onGamePaused);
-    connect(this, &Table::tableSlotResized, [=](QSize newFixedSize) { tableSlot->setFixedSize(newFixedSize); });
+    connect(this, &Table::tableSlotResized, tableSlot,
+            [tableSlot](QSize newFixedSize) { tableSlot->setFixedSize(newFixedSize); });
     connect(this, &Table::canRemove, tableSlot, &TableSlot::onCanRemove);
     items.push_back(tableSlot);
 }
