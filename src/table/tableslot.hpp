@@ -38,6 +38,8 @@ class YaFrame;
 
 class YaLabel;
 
+class StrategyInfo;
+
 class Strategy;
 
 /*!
@@ -49,7 +51,7 @@ class TableSlot : public Cards {
 Q_OBJECT
 
 public:
-    explicit TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, bool isActive = false,
+    explicit TableSlot(StrategyInfo * strategies, QSvgRenderer *renderer, bool isActive = false,
                        QWidget *parent = nullptr);
 
     bool isFake() const;

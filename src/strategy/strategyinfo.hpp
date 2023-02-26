@@ -39,7 +39,7 @@ public:
 
     Strategy *getStrategyById(qint32 id);
 
-    void showStrategyByName(const QString& name);
+    void showStrategyByName(const QString &name);
 
     QVector<Strategy *> getStrategies();
 
@@ -50,7 +50,7 @@ private:
     qint32 _id;
     QLabel *title;
     QLabel *browser;
-    QVector<QSpinBox*> weights;
+    QVector<QSpinBox *> weights;
 
     void initStrategies();
 };

@@ -50,7 +50,7 @@ void Table::onTableSlotActivated() {
 }
 
 void Table::addNewTableSlot(bool isActive) {
-    auto *tableSlot = new TableSlot(strategyInfo->getStrategies(), renderer, isActive, this);
+    auto *tableSlot = new TableSlot(strategyInfo, renderer, isActive, this);
     if (isActive) {
         available.insert(items.size());
     }
