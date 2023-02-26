@@ -42,6 +42,8 @@ class StrategyInfo;
 
 class Strategy;
 
+class QComboBox;
+
 /*!
  * \brief The TableSlot class represents the slot on a table that can contain
  * one or multiple shuffled deck of playing cards. The slot can be fake (not contain any deck)
@@ -51,7 +53,7 @@ class TableSlot : public Cards {
 Q_OBJECT
 
 public:
-    explicit TableSlot(StrategyInfo * strategies, QSvgRenderer *renderer, bool isActive = false,
+    explicit TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isActive = false,
                        QWidget *parent = nullptr);
 
     bool isFake() const;
@@ -110,6 +112,10 @@ public Q_SLOTS:
 
     void onCanRemove(bool canRemove);
 
+    void onNewStrategy();
+
+    void onStrategyChanged(int index);
+
     void userChecking();
 
     void reshuffleDeck();
@@ -120,7 +126,8 @@ private:
     void userQuizzing();
 
     QList<qint32> cards;
-    Strategy* _strategy;
+    Strategy *_strategy{};
+    StrategyInfo *_strategies;
     qint32 currentWeight = 0;
     bool fake = true;
 
@@ -136,10 +143,13 @@ private:
     YaLabel *messageLabel;
     YaLabel *indexLabel;
     YaLabel *weightLabel;
+    YaLabel *strategyHintLabel;
 
     QPushButton *refreshButton;
     QPushButton *swapButton;
     QPushButton *closeButton;
+
+    QComboBox *strategyBox;
 };
 
 #endif //YACARDCOUNTER_TABLESLOT_HPP

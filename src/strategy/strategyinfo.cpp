@@ -121,6 +121,7 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
                                   currentWeights, true);
         listWidget->currentItem()->setText(_name->text());
         addFakeStrategy();
+        emit newStrategy();
     });
     connect(listWidget, &QListWidget::itemSelectionChanged, this,
             [=]() { showStrategyByName(listWidget->currentItem()->text()); });

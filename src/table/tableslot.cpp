@@ -38,28 +38,21 @@
 #include "src/widgets/base/frame.hpp"
 
 TableSlot::TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isActive, QWidget *parent)
-        : Cards(renderer, parent) {
-
-    _strategy = strategies->getStrategyById(0);
-    QStringList items;
-    for (auto *item: strategies->getStrategies()) {
-        items.push_back(item->getName());
-    }
-    items.pop_back(); // last is fake
+        : Cards(renderer, parent), _strategies(strategies) {
 
     // YaLabels:
     messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
     indexLabel = new YaLabel("0/0");
     weightLabel = new YaLabel("weight: 0");
-    auto *strategyHintLabel = new YaLabel(items[0]);
+    strategyHintLabel = new YaLabel("");
+    onStrategyChanged(0);
 
     // QComboBoxes:
-    auto *strategyBox = new QComboBox();
-    strategyBox->addItems(items);
-    connect(strategyBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
-        _strategy = strategies->getStrategyById(index);
-        strategyHintLabel->setText(items[index]);
-    });
+    strategyBox = new QComboBox();
+    onNewStrategy();
+    connect(strategies, &StrategyInfo::newStrategy, this, &TableSlot::onNewStrategy);
+    connect(strategyBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &TableSlot::onStrategyChanged);
     auto *indexing = new QCheckBox();
     connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
     auto *strategyHint = new QCheckBox();
@@ -172,12 +165,6 @@ void TableSlot::onGamePaused(bool paused) {
     update();
 }
 
-//void TableSlot::onTableSlotResized(QSize newFixedSize) {
-//    if (size() != newFixedSize) {
-//        setFixedSize(newFixedSize);
-//    }
-//}
-
 bool TableSlot::isFake() const {
     return fake;
 }
@@ -243,5 +230,22 @@ void TableSlot::activate(int value) {
         currentWeight = 0;
         deckCount->setMinimum(1);
         emit tableSlotActivated();
+    }
+}
+
+void TableSlot::onNewStrategy() {
+    QStringList items;
+    for (auto *item: _strategies->getStrategies()) {
+        items.push_back(item->getName());
+    }
+    items.pop_back(); // last is fake
+    strategyBox->clear();
+    strategyBox->addItems(items);
+}
+
+void TableSlot::onStrategyChanged(int index) {
+    if (index >= 0) {
+        _strategy = _strategies->getStrategyById(index);
+        strategyHintLabel->setText(_strategy->getName());
     }
 }

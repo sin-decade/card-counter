@@ -51,6 +51,10 @@ public:
 
     QVector<Strategy *> getStrategies();
 
+signals:
+
+    void newStrategy();
+
 private:
     QVector<Strategy *> items;
     QSvgRenderer *m_renderer;
@@ -61,7 +65,7 @@ private:
     QLineEdit *_nameInput;
     QTextEdit *_descriptionInput;
     QPushButton *saveButton;
-    QListWidget* listWidget;
+    QListWidget *listWidget;
     QVector<QSpinBox *> weights;
 
     void initStrategies();
