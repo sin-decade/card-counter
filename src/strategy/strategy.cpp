@@ -22,7 +22,6 @@
 #include <QBoxLayout>
 #include <QTextEdit>
 #include <QSpinBox>
-#include <utility>
 // own
 #include "strategy.hpp"
 

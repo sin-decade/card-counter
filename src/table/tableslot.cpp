@@ -32,15 +32,17 @@
 #include "tableslot.hpp"
 #include "src/widgets/cards.hpp"
 #include "src/strategy/strategy.hpp"
+#include "src/strategy/strategyinfo.hpp"
 // own widgets
 #include "src/widgets/base/label.hpp"
 #include "src/widgets/base/frame.hpp"
 
-TableSlot::TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, bool isActive, QWidget *parent)
-        : Cards(renderer, parent), _strategy(strategies[0]) {
+TableSlot::TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isActive, QWidget *parent)
+        : Cards(renderer, parent) {
 
+    _strategy = strategies->getStrategyById(0);
     QStringList items;
-    for (auto *item: strategies) {
+    for (auto *item: strategies->getStrategies()) {
         items.push_back(item->getName());
     }
 
@@ -54,7 +56,7 @@ TableSlot::TableSlot(QVector<Strategy *> strategies, QSvgRenderer *renderer, boo
     auto *strategyBox = new QComboBox();
     strategyBox->addItems(items);
     connect(strategyBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
-        _strategy = strategies[index];
+        _strategy = strategies->getStrategyById(index);
         strategyHintLabel->setText(items[index]);
     });
     auto *indexing = new QCheckBox();
