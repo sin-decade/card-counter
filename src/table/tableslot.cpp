@@ -45,6 +45,7 @@ TableSlot::TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isAc
     for (auto *item: strategies->getStrategies()) {
         items.push_back(item->getName());
     }
+    items.pop_back(); // last is fake
 
     // YaLabels:
     messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));

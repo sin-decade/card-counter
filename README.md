@@ -50,7 +50,7 @@ cmake --build build/
 cmake --install build/
 
 source build/prefix.sh # located in the build directory
-YaCardCounter
+ya-cardcounter
 ```
 
 You can find the documentation [here](https://yacodelab.github.io/YaCardCounter/docs/html/).

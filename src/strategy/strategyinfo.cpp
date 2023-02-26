@@ -28,6 +28,9 @@
 #include <QDialogButtonBox>
 #include <QListWidget>
 #include <QLineEdit>
+#include <QTextEdit>
+// KF
+#include <KLocalizedString>
 // own
 #include "strategyinfo.hpp"
 #include "strategy.hpp"
@@ -39,39 +42,47 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
     setWindowTitle("Strategy Info");
     setModal(true);
 
-    auto *dialogButtons = new QDialogButtonBox();
-    dialogButtons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(dialogButtons, &QDialogButtonBox::accepted, this, &QDialog::accept);
-    connect(dialogButtons, &QDialogButtonBox::rejected, this, &QDialog::reject);
-
     initStrategies();
 
+    auto *dialogButtons = new QDialogButtonBox();
+    saveButton = new QPushButton(QIcon::fromTheme("document-save"), i18n("&Save"));
     auto *window = new QHBoxLayout(this);
     auto *leftPanel = new QWidget;
     auto *leftPanelLayout = new QVBoxLayout(leftPanel);
     auto *searchBox = new QLineEdit();
-    auto *listWidget = new QListWidget();
+    listWidget = new QListWidget();
     auto *rightPanel = new QWidget;
     auto *body = new QVBoxLayout(rightPanel);
     auto *carousel = new Carousel(renderer->boundsOnElement("back").size());
-    title = new QLabel(items[_id]->getName());
-    browser = new QLabel(items[_id]->getDescription());
+    _name = new QLabel(items[_id]->getName());
+    _description = new QLabel(items[_id]->getDescription());
+    _nameInput = new QLineEdit();
+    _descriptionInput = new QTextEdit();
+    auto *title = new QWidget;
+    auto *titleLayout = new QHBoxLayout(title);
+    auto *browser = new QWidget;
+    auto *browserLayout = new QHBoxLayout(browser);
 
     leftPanel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
     searchBox->setPlaceholderText(tr("Search"));
     listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     listWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    browser->setWordWrap(true);
-    browser->setTextFormat(Qt::TextFormat::MarkdownText);
-    browser->setOpenExternalLinks(true);
+    _description->setWordWrap(true);
+    _description->setTextFormat(Qt::TextFormat::MarkdownText);
+    _description->setOpenExternalLinks(true);
+    _name->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _nameInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _description->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _descriptionInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    dialogButtons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
+    dialogButtons->addButton(saveButton, QDialogButtonBox::ActionRole);
     leftPanelLayout->addWidget(searchBox);
-    for (auto &item: items) {
-        auto *widgetItem = new QListWidgetItem(item->getName());
-        listWidget->addItem(widgetItem);
-    }
-    listWidget->sortItems();
+    titleLayout->addWidget(_nameInput);
+    titleLayout->addWidget(_name);
+    browserLayout->addWidget(_descriptionInput);
+    browserLayout->addWidget(_description);
     leftPanelLayout->addWidget(listWidget);
     window->addWidget(leftPanel);
     window->addWidget(rightPanel);
@@ -95,9 +106,22 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
     body->addWidget(carousel);
     body->addStretch();
     body->addWidget(dialogButtons);
+    fillList();
 
     listWidget->setCurrentItem(listWidget->item(0));
-
+    connect(saveButton, &QPushButton::clicked, this, [=]() {
+        if (_nameInput->text() != _name->text() || _descriptionInput->toMarkdown() != _description->text()) {
+            return;
+        }
+        QVector<qint32> currentWeights;
+        for (auto &weight: weights) {
+            currentWeights.push_back(weight->value());
+        }
+        items[_id] = new Strategy(_name->text(), _description->text(),
+                                  currentWeights, true);
+        listWidget->currentItem()->setText(_name->text());
+        addFakeStrategy();
+    });
     connect(listWidget, &QListWidget::itemSelectionChanged, this,
             [=]() { showStrategyByName(listWidget->currentItem()->text()); });
     connect(searchBox, &QLineEdit::textChanged, this, [=](const QString &text) {
@@ -107,6 +131,16 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
             item->setHidden(!matches);
         }
     });
+    connect(_nameInput, &QLineEdit::textChanged, this,
+            [=](const QString &text) { _name->setText(text); });
+    connect(_descriptionInput, &QTextEdit::textChanged, this,
+            [=]() { _description->setText(_descriptionInput->toMarkdown()); });
+    connect(dialogButtons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(dialogButtons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+    saveButton->hide();
+    _nameInput->hide();
+    _descriptionInput->hide();
 }
 
 Strategy *StrategyInfo::getStrategyById(qint32 id) {
@@ -123,11 +157,15 @@ void StrategyInfo::showStrategyByName(const QString &name) {
     }
     if (id != -1 && _id != id) {
         _id = id;
-        title->setText(items[_id]->getName());
-        browser->setText(items[_id]->getDescription());
+        _name->setText(items[_id]->getName());
+        _description->setText(items[_id]->getDescription());
+        bool isCustom = items[_id]->isCustom();
+        _descriptionInput->setHidden(!isCustom);
+        _nameInput->setHidden(!isCustom);
+        saveButton->setHidden(!isCustom);
         for (int i = Cards::Rank::Ace; i <= Cards::Rank::King; i++) {
             weights[i - Cards::Rank::Ace]->setValue(items[_id]->getWeights(i - Cards::Rank::Ace));
-            weights[i - Cards::Rank::Ace]->setReadOnly(!items[_id]->isCustom());
+            weights[i - Cards::Rank::Ace]->setReadOnly(!isCustom);
         }
     }
 }
@@ -195,6 +233,25 @@ void StrategyInfo::initStrategies() {
             "the deck, with a focus on the 10-value cards, and is considered one of the earliest "
             "and most basic card counting systems.",
             {1, 1, 1, 1, 1, 1, 1, 1, 1, -2, -2, -2, -2}));
+}
+
+void StrategyInfo::addFakeStrategy() {
+    items.push_back(new Strategy(
+            "New Strategy",
+            "Some Notes (use Markdown)",
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            true));
+    listWidget->sortItems();
+    auto *widgetItem = new QListWidgetItem(items.last()->getName());
+    listWidget->addItem(widgetItem);
+}
+
+void StrategyInfo::fillList() {
+    for (auto &item: items) {
+        auto *widgetItem = new QListWidgetItem(item->getName());
+        listWidget->addItem(widgetItem);
+    }
+    addFakeStrategy();
 }
 
 

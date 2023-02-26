@@ -32,6 +32,14 @@ class QLabel;
 
 class QSpinBox;
 
+class QPushButton;
+
+class QLineEdit;
+
+class QTextEdit;
+
+class QListWidget;
+
 class StrategyInfo : public QDialog {
 Q_OBJECT
 public:
@@ -48,11 +56,19 @@ private:
     QSvgRenderer *m_renderer;
 
     qint32 _id;
-    QLabel *title;
-    QLabel *browser;
+    QLabel *_name;
+    QLabel *_description;
+    QLineEdit *_nameInput;
+    QTextEdit *_descriptionInput;
+    QPushButton *saveButton;
+    QListWidget* listWidget;
     QVector<QSpinBox *> weights;
 
     void initStrategies();
+
+    void addFakeStrategy();
+
+    void fillList();
 };
 
 
