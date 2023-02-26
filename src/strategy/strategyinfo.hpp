@@ -21,27 +21,38 @@
 #ifndef YACARDCOUNTER_STRATEGYINFO_HPP
 #define YACARDCOUNTER_STRATEGYINFO_HPP
 
-// KF
-#include <KPageDialog>
+// Qt
+#include <QDialog>
 
 class Strategy;
 
 class QSvgRenderer;
 
-class StrategyInfo : public KPageDialog {
+class QLabel;
+
+class QSpinBox;
+
+class StrategyInfo : public QDialog {
 Q_OBJECT
 public:
     explicit StrategyInfo(QSvgRenderer *renderer, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
     Strategy *getStrategyById(qint32 id);
 
-    void showStrategyById(qint32 id);
+    void showStrategyByName(const QString& name);
 
     QVector<Strategy *> getStrategies();
 
 private:
     QVector<Strategy *> items;
     QSvgRenderer *m_renderer;
+
+    qint32 _id;
+    QLabel *title;
+    QLabel *browser;
+    QVector<QSpinBox*> weights;
+
+    void initStrategies();
 };
 
 

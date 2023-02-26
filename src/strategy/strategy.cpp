@@ -21,67 +21,32 @@
 // Qt
 #include <QBoxLayout>
 #include <QTextEdit>
-#include <QLabel>
 #include <QSpinBox>
-#include <QFormLayout>
+#include <utility>
 // own
 #include "strategy.hpp"
-#include "src/widgets/carousel.hpp"
-#include "src/widgets/cards.hpp"
 
 qint32 Strategy::updateWeight(qint32 currentWeight, qint32 rank) {
-    return currentWeight + _weights[rank - 1]->value();
+    return currentWeight + _weights[rank - 1];
 }
 
-Strategy::Strategy(QSvgRenderer *renderer, bool custom, QWidget *parent) : QWidget(parent) {
-    auto *strategy = new QVBoxLayout(this);
-    browser = new QLabel();
-    browser->setWordWrap(true);
-    browser->setTextFormat(Qt::TextFormat::MarkdownText);
-    browser->setOpenExternalLinks(true);
+Strategy::Strategy(QString name, QString description, QVector<qint32> weights, bool custom)
+        : _custom(custom), _weights(std::move(weights)), _name(std::move(name)), _description(std::move(description)) {
 
-    auto *carousel = new Carousel(QSizeF(3, 4));
-    for (int i = Cards::Rank::Ace; i <= Cards::Rank::King; i++) {
-        auto *card = new Cards(renderer);
-        card->setId(i);
-        auto *form = new QFormLayout(card);
-        _weights.push_back(new QSpinBox());
-        _weights.last()->setRange(-5, 5);
-        _weights.last()->setReadOnly(!custom);
-        _weights.last()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-        form->setFormAlignment(Qt::AlignCenter);
-        form->addRow(_weights.last());
-        carousel->addWidget(card);
-    }
-    if (custom) {
-//        auto *form = new QFormLayout();
-//        auto *nameInput = new QLineEdit();
-//        auto *descriptionArea = new QTextEdit();
-//        form->setFormAlignment(Qt::AlignCenter);
-//        form->addRow(tr("&Name:"), nameInput);
-//        form->addRow(tr("&Description:"), descriptionArea);
-    } else {
-        strategy->addWidget(browser);
-    }
-    strategy->addWidget(carousel);
-}
-
-void Strategy::setName(QString name) {
-    _name = std::move(name);
-}
-
-void Strategy::setDescription(const QString& description) {
-    browser->setText(description);
 }
 
 QString Strategy::getName() {
     return _name;
 }
 
-void Strategy::setWeights(QVector<qint32> weights) {
-    Q_ASSERT(weights.size() <= _weights.size());
+QString Strategy::getDescription() {
+    return _description;
+}
 
-    for (int i = 0; i < weights.size(); i++) {
-        _weights[i]->setValue(weights[i]);
-    }
+bool Strategy::isCustom() const {
+    return _custom;
+}
+
+qint32 Strategy::getWeights(qint32 id) {
+    return _weights[id];
 }

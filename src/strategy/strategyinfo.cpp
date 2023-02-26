@@ -19,95 +19,182 @@
 */
 
 // Qt
-#include <QVBoxLayout>
+#include <QBoxLayout>
+#include <QPushButton>
+#include <QLabel>
+#include <QFormLayout>
+#include <QSpinBox>
+#include <QSvgRenderer>
+#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QLineEdit>
 // own
 #include "strategyinfo.hpp"
 #include "strategy.hpp"
+#include "src/widgets/carousel.hpp"
+#include "src/widgets/cards.hpp"
 
 StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFlags flags)
-        : KPageDialog(parent, flags), m_renderer(renderer) {
+        : QDialog(parent, flags), m_renderer(renderer), _id(0) {
     setWindowTitle("Strategy Info");
     setModal(true);
 
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("Hi-Lo Count");
-    items.last()->setDescription(
-            "The Hi-Lo blackjack card counting system was first introduced by Harvey Dubner in 1963. Dubner's goal was "
-            "to create a simple yet effective system that could be used by anyone to increase their odds of winning "
-            "at blackjack.");
-    items.last()->setWeights({-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1});
+    auto *dialogButtons = new QDialogButtonBox();
+    dialogButtons->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(dialogButtons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(dialogButtons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("Hi-Opt I Count");
-    items.last()->setDescription(
-            "The Hi-Opt I blackjack card counting system was developed by Charles Einstein and introduced in his book "
-            "\"The World's Greatest Blackjack Book\" in 1980. The Hi-Opt I system assigns point values to each card in "
-            "the deck and is a more complex system than the Hi-Lo system, with additional point values for some cards. "
-            "It is considered a more powerful system than the Hi-Lo, but also more difficult to learn "
-            "and use effectively.");
-    items.last()->setWeights({0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1});
+    initStrategies();
 
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("Hi-Opt II Count");
-    items.last()->setDescription(
-            "The Hi-Opt II blackjack card counting system is a more advanced version of the Hi-Opt I system, "
-            "developed by Lance Humble and Carl Cooper in their book \"The World's Greatest Blackjack Book\" in 1980. "
-            "The Hi-Opt II system assigns point values to each card in the deck, with additional point values "
-            "for some cards, and is considered one of the most powerful card counting systems. It is also one of "
-            "the most difficult to learn and use effectively.");
-    items.last()->setWeights({0, 1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2});
+    auto *window = new QHBoxLayout(this);
+    auto *leftPanel = new QWidget;
+    auto *leftPanelLayout = new QVBoxLayout(leftPanel);
+    auto *searchBox = new QLineEdit();
+    auto *listWidget = new QListWidget();
+    auto *rightPanel = new QWidget;
+    auto *body = new QVBoxLayout(rightPanel);
+    auto *carousel = new Carousel(renderer->boundsOnElement("back").size());
+    title = new QLabel(items[_id]->getName());
+    browser = new QLabel(items[_id]->getDescription());
 
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("KO Count");
-    items.last()->setDescription(
-            "The Knock-Out (KO) blackjack card counting system was developed by Olaf Vancura and Ken Fuchs in their "
-            "book \"Knock-Out Blackjack\" in 1998. The KO system assigns point values to each card in the deck, with "
-            "the additional advantage that it does not require a true count conversion for betting, making it easier "
-            "to use than some other systems.");
-    items.last()->setWeights({-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1});
+    leftPanel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
+    searchBox->setPlaceholderText(tr("Search"));
+    listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    listWidget->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    listWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    browser->setWordWrap(true);
+    browser->setTextFormat(Qt::TextFormat::MarkdownText);
+    browser->setOpenExternalLinks(true);
 
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("Omega II Count");
-    items.last()->setDescription(
-            "The Omega II blackjack card counting system was developed by Bryce Carlson and introduced in his book "
-            "\"Blackjack for Blood\" in 2001. The Omega II system assigns point values to each card in the deck, with "
-            "additional point values for some cards, and is considered one of the most powerful card counting systems, "
-            "especially for multi-deck games.");
-    items.last()->setWeights({0, 1, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2, -2});
-
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("Zen Count");
-    items.last()->setDescription(
-            "The Zen Count blackjack card counting system was developed by Arnold Snyder and introduced in his book "
-            "\"Blackbelt in Blackjack\" in 1983. The Zen Count system assigns point values to each card in the deck, "
-            "with additional point values for some cards, and is considered a powerful system for both single "
-            "and multi-deck games.");
-    items.last()->setWeights({-1, 1, 1, 2, 2, 2, 1, 0, 0, -2, -2, -2, -2});
-
-    items.push_back(new Strategy(m_renderer));
-    items.last()->setName("10 Count");
-    items.last()->setDescription(
-            "The 10 Count blackjack card counting system was developed by Edward O. Thorp, a mathematician and author "
-            "of the classic book \"Beat the Dealer\" in 1962. The 10 Count system assigns point values to each card in "
-            "the deck, with a focus on the 10-value cards, and is considered one of the earliest "
-            "and most basic card counting systems.");
-    items.last()->setWeights({1, 1, 1, 1, 1, 1, 1, 1, 1, -2, -2, -2, -2});
-
-    for (auto *item: items) {
-        addPage(item, item->getName());
+    leftPanelLayout->addWidget(searchBox);
+    for (auto &item: items) {
+        auto *widgetItem = new QListWidgetItem(item->getName());
+        listWidget->addItem(widgetItem);
     }
+    listWidget->sortItems();
+    leftPanelLayout->addWidget(listWidget);
+    window->addWidget(leftPanel);
+    window->addWidget(rightPanel);
+    body->addWidget(title);
+    body->addWidget(browser);
+    for (int i = Cards::Rank::Ace; i <= Cards::Rank::King; i++) {
+        auto *card = new Cards(renderer);
+        auto *form = new QFormLayout(card);
+        auto *spin = new QSpinBox();
+
+        card->setId(i);
+        spin->setRange(-5, 5);
+        spin->setValue(items[_id]->getWeights(i - Cards::Rank::Ace));
+        spin->setReadOnly(!items[_id]->isCustom());
+        spin->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        form->setFormAlignment(Qt::AlignCenter);
+        form->addRow(spin);
+        carousel->addWidget(card);
+        weights.push_back(spin);
+    }
+    body->addWidget(carousel);
+    body->addStretch();
+    body->addWidget(dialogButtons);
+
+    listWidget->setCurrentItem(listWidget->item(0));
+
+    connect(listWidget, &QListWidget::itemSelectionChanged, this,
+            [=]() { showStrategyByName(listWidget->currentItem()->text()); });
+    connect(searchBox, &QLineEdit::textChanged, this, [=](const QString &text) {
+        for (int i = 0; i < listWidget->count(); i++) {
+            auto *item = listWidget->item(i);
+            bool matches = item->text().contains(text, Qt::CaseInsensitive);
+            item->setHidden(!matches);
+        }
+    });
 }
 
 Strategy *StrategyInfo::getStrategyById(qint32 id) {
     return items[id];
 }
 
-void StrategyInfo::showStrategyById(qint32 id) {
-    setCurrentPage(reinterpret_cast<KPageWidgetItem *>(getStrategyById(id)));
+void StrategyInfo::showStrategyByName(const QString &name) {
+    qint32 id = -1;
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i]->getName() == name) {
+            id = i;
+            break;
+        }
+    }
+    if (id != -1 && _id != id) {
+        _id = id;
+        title->setText(items[_id]->getName());
+        browser->setText(items[_id]->getDescription());
+        for (int i = Cards::Rank::Ace; i <= Cards::Rank::King; i++) {
+            weights[i - Cards::Rank::Ace]->setValue(items[_id]->getWeights(i - Cards::Rank::Ace));
+            weights[i - Cards::Rank::Ace]->setReadOnly(!items[_id]->isCustom());
+        }
+    }
 }
 
 QVector<Strategy *> StrategyInfo::getStrategies() {
     return items;
+}
+
+void StrategyInfo::initStrategies() {
+
+
+    items.push_back(new Strategy(
+            "Hi-Opt I Count",
+            "The Hi-Opt I blackjack card counting system was developed by Charles Einstein and introduced in his book "
+            "\"The World's Greatest Blackjack Book\" in 1980. The Hi-Opt I system assigns point values to each card in "
+            "the deck and is a more complex system than the Hi-Lo system, with additional point values for some cards. "
+            "It is considered a more powerful system than the Hi-Lo, but also more difficult to learn "
+            "and use effectively.",
+            {0, 0, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}));
+
+    items.push_back(new Strategy(
+            "Hi-Lo Count",
+            "The Hi-Lo blackjack card counting system was first introduced by Harvey Dubner in 1963. Dubner's goal was "
+            "to create a simple yet effective system that could be used by anyone to increase their odds of winning "
+            "at blackjack.",
+            {-1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1}));
+
+    items.push_back(new Strategy(
+            "Hi-Opt II Count",
+            "The Hi-Opt II blackjack card counting system is a more advanced version of the Hi-Opt I system, "
+            "developed by Lance Humble and Carl Cooper in their book \"The World's Greatest Blackjack Book\" in 1980. "
+            "The Hi-Opt II system assigns point values to each card in the deck, with additional point values "
+            "for some cards, and is considered one of the most powerful card counting systems. It is also one of "
+            "the most difficult to learn and use effectively.",
+            {0, 1, 1, 2, 2, 1, 1, 0, 0, -2, -2, -2, -2}));
+
+    items.push_back(new Strategy(
+            "KO Count",
+            "The Knock-Out (KO) blackjack card counting system was developed by Olaf Vancura and Ken Fuchs in their "
+            "book \"Knock-Out Blackjack\" in 1998. The KO system assigns point values to each card in the deck, with "
+            "the additional advantage that it does not require a true count conversion for betting, making it easier "
+            "to use than some other systems.",
+            {-1, 1, 1, 1, 1, 1, 1, 0, 0, -1, -1, -1, -1}));
+
+    items.push_back(new Strategy(
+            "Omega II Count",
+            "The Omega II blackjack card counting system was developed by Bryce Carlson and introduced in his book "
+            "\"Blackjack for Blood\" in 2001. The Omega II system assigns point values to each card in the deck, with "
+            "additional point values for some cards, and is considered one of the most powerful card counting systems, "
+            "especially for multi-deck games.",
+            {0, 1, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2, -2}));
+
+    items.push_back(new Strategy(
+            "Zen Count",
+            "The Zen Count blackjack card counting system was developed by Arnold Snyder and introduced in his book "
+            "\"Blackbelt in Blackjack\" in 1983. The Zen Count system assigns point values to each card in the deck, "
+            "with additional point values for some cards, and is considered a powerful system for both single "
+            "and multi-deck games.",
+            {-1, 1, 1, 2, 2, 2, 1, 0, 0, -2, -2, -2, -2}));
+
+    items.push_back(new Strategy(
+            "10 Count",
+            "The 10 Count blackjack card counting system was developed by Edward O. Thorp, a mathematician and author "
+            "of the classic book \"Beat the Dealer\" in 1962. The 10 Count system assigns point values to each card in "
+            "the deck, with a focus on the 10-value cards, and is considered one of the earliest "
+            "and most basic card counting systems.",
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, -2, -2, -2, -2}));
 }
 
 

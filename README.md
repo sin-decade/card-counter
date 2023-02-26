@@ -53,7 +53,7 @@ source build/prefix.sh # located in the build directory
 YaCardCounter
 ```
 
-You can find documentation at [here](https://yacodelab.github.io/YaCardCounter/docs/html/).
+You can find the documentation [here](https://yacodelab.github.io/YaCardCounter/docs/html/).
 
 ### License
 

@@ -75,7 +75,7 @@ void Carousel::addWidget(QWidget *widget) {
 
 void Carousel::updateProps(QSize size) {
     QSizeF itemSize = QSizeF(size.height() * ratio.width() / ratio.height(), size.height());
-    columnCount = qMin(widgets.size(), qint32(size.width() / itemSize.width()));
+    columnCount = qMin(widgets.size(), qint32(0.95 * size.width() / itemSize.width()));
     updateLayout(0.9 * size.height() / ratio.height());
 }
 
