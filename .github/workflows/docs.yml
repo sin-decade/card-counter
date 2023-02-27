@@ -9,4 +9,4 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: dreygur/doxygen@latest
+      - uses: mattnotmitt/doxygen-action@1.9.5
