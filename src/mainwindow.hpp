@@ -37,27 +37,61 @@ class MainWindow : public KXmlGuiWindow {
 Q_OBJECT
 
 public:
+    /**
+     * @brief Constructs the main window.
+     * @param parent The parent widget.
+     */
     explicit MainWindow(QWidget *parent = nullptr);
 
 private Q_SLOTS:
 
-    void advanceTime(const QString &);
+    /**
+     * @brief Advances the time on the game clock.
+     * @param elapsedTime The time elapsed since the last call to this function.
+     */
+    void advanceTime(const QString &elapsedTime);
 
+    /**
+     * @brief Loads the application settings.
+     */
     void loadSettings();
 
+    /**
+     * @brief Starts a new game.
+     */
     void newGame();
 
+    /**
+     * @brief Called when the game is over.
+     */
     void onGameOver();
 
+    /**
+     * @brief Shows the high scores dialog.
+     */
     void showHighScores();
 
+    /**
+     * @brief Shows the settings dialog.
+     */
     void configureSettings();
 
+    /**
+     * @brief Pauses or unpauses the game.
+     * @param paused True to pause the game, false to unpause it.
+     */
     void pauseGame(bool paused);
 
+    /**
+     * @brief Called when the score is updated.
+     * @param inc True if the score should be incremented, false if it should be decremented.
+     */
     void onScoreUpdate(bool inc);
 
 private:
+    /**
+     * @brief Sets up the actions for the main window.
+     */
     void setupActions();
 
     Table *table;
@@ -67,8 +101,12 @@ private:
 
     QPointer<QLabel> timeLabel = new QLabel;
     QPointer<QLabel> scoreLabel = new QLabel;
+
+    /**
+     * @brief The current score.
+     */
     QPair<qint32, qint32> score;
 };
 
+#endif // YACARDCOUNTER_MAINWINDOW_HPP
 
-#endif //YACARDCOUNTER_MAINWINDOW_HPP

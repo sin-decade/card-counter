@@ -21,25 +21,63 @@
 #ifndef YACARDCOUNTER_STRATEGY_HPP
 #define YACARDCOUNTER_STRATEGY_HPP
 
+// Qt
+#include <QString>
+#include <QVector>
+
+/**
+ * @brief The Strategy class represents a card counting strategy
+ */
 class Strategy {
 public:
+    /**
+     * @brief Constructs a new Strategy object
+     * @param name The name of the strategy
+     * @param description A short description of the strategy
+     * @param weights A vector of weights, where the index is the card rank
+     * @param custom Whether this strategy is custom or not
+     */
     explicit Strategy(QString name, QString description, QVector<qint32> weights, bool custom = false);
 
+    /**
+     * @brief isCustom Returns whether this strategy is custom or not
+     * @return True if this is a custom strategy, false otherwise
+     */
     bool isCustom() const;
 
+    /**
+     * @brief getName Returns the name of the strategy
+     * @return The name of the strategy
+     */
     QString getName();
 
+    /**
+     * @brief getDescription Returns a short description of the strategy
+     * @return The description of the strategy
+     */
     QString getDescription();
 
+    /**
+     * @brief getWeights Returns the weight of the given card rank
+     * @param id The card rank
+     * @return The weight of the given card rank
+     */
     qint32 getWeights(qint32 id);
 
+    /**
+     * @brief updateWeight Updates the weight of the deck using this strategy to the last card opened
+     * @param currentWeight The current weight of the deck
+     * @param rank The rank of the last card opened
+     * @return The new weight of the deck
+     */
     qint32 updateWeight(qint32 currentWeight, qint32 rank);
 
 private:
-    bool _custom;
-    QVector<qint32> _weights;
-    QString _name, _description;
+    bool _custom; /**< Whether this strategy is custom or not */
+    QVector<qint32> _weights; /**< A vector of weights, where the index is the card rank */
+    QString _name; /**< The name of the strategy */
+    QString _description; /**< A short description of the strategy */
 };
 
-
 #endif //YACARDCOUNTER_STRATEGY_HPP
+
