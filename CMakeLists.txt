@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(YaCardCounter)
+project(ya-cardcounter)
 
 set(QT_MIN_VERSION "5.15.2")
 set(KF5_MIN_VERSION "5.78.0")
@@ -36,15 +36,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(YaCardCounter_SRCS src/main.cpp src/mainwindow.cpp
+set(ya-cardcounter_SRCS src/main.cpp src/mainwindow.cpp
         src/table/table.cpp src/table/tableslot.cpp
         src/strategy/strategyinfo.cpp src/strategy/strategy.cpp
         src/widgets/carousel.cpp src/widgets/cards.cpp
         src/widgets/base/label.cpp src/widgets/base/frame.cpp)
 
-add_executable(YaCardCounter ${YaCardCounter_SRCS})
+add_executable(ya-cardcounter ${ya-cardcounter_SRCS})
 
-target_link_libraries(YaCardCounter
+target_link_libraries(ya-cardcounter
         Qt5::Widgets
         Qt5::Svg
         KF5::CoreAddons
@@ -56,5 +56,5 @@ target_link_libraries(YaCardCounter
         KF5KDEGames
         )
 
-install(TARGETS YaCardCounter ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ya-cardcounter ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES src/yacardcounterui.rc DESTINATION ${KDE_INSTALL_KXMLGUI5DIR}/yacardcounter)
