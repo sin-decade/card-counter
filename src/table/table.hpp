@@ -37,16 +37,41 @@ class StrategyInfo;
 class Table : public QWidget {
 Q_OBJECT
 public:
+    /**
+     * @brief Constructs a new Table object.
+     *
+     * @param parent The parent widget of the table.
+     */
     explicit Table(QWidget *parent = nullptr);
 
+    /**
+     * @brief Creates a new game on the table with the given difficulty level.
+     *
+     * @param level The difficulty level of the game.
+     */
     void createNewGame(KgDifficultyLevel::StandardLevel level);
 
+    /**
+     * @brief Pauses or resumes the game on the table.
+     *
+     * @param paused A boolean indicating whether to pause or resume the game.
+     */
     void pause(bool paused);
 
 signals:
 
+    /**
+     * @brief Emitted when the game on the table is paused or resumed.
+     *
+     * @param paused A boolean indicating whether the game is now paused or resumed.
+     */
     void gamePaused(bool paused);
 
+    /**
+     * @brief Emitted when a table slot is resized.
+     *
+     * @param newFixedSize The new fixed size of the table slot.
+     */
     void tableSlotResized(QSize newFixedSize);
 
     /**
@@ -57,8 +82,16 @@ signals:
     */
     void canRemove(bool canRemove);
 
+    /**
+     * @brief Emitted when the score is updated.
+     *
+     * @param inc A boolean indicating whether the score is being incremented or decremented.
+     */
     void scoreUpdate(bool inc);
 
+    /**
+     * @brief Emitted when the game is over.
+     */
     void gameOver();
 
 private Q_SLOTS:
@@ -73,6 +106,10 @@ private Q_SLOTS:
 
     void onUserQuizzed();
 
+    /**
+     * @brief onUserAnswered - Slot for handling a user's answer to a quiz question.
+     * @param correct A boolean value indicating whether the answer was correct.
+     */
     void onUserAnswered(bool correct);
 
     void onSwapTargetSelected();
@@ -85,26 +122,17 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    QGridLayout *layout;
-
+    /**
+     * @brief addNewTableSlot - Adds a new TableSlot to the table.
+     * @param isActive A boolean value indicating whether the new TableSlot should be active.
+     */
     void addNewTableSlot(bool isActive = false);
 
+    /**
+     * @brief setRenderer - Sets the renderer used to render the table slots.
+     * @param cardTheme The name of the card theme to use.
+     */
     void setRenderer(const QString &cardTheme);
-
-    QSvgRenderer *renderer{};
-    QRectF bounds;
-    QTimer *countdown;
-    StrategyInfo *strategyInfo;
-
-    bool launching{};
-    qint32 columnCount = -1;
-    qint32 tableSlotCountLimit{};
-    qreal scale = -1;
-
-    QVector<int> swapTarget;
-    QVector<TableSlot *> items;
-    QSet<qint32> jokers;
-    QSet<qint32> available;
 
     /**
     * @brief The purpose of this function is to find the optimal number of columns for the table,
@@ -128,6 +156,23 @@ private:
      * @param newScale The new scale to use for the size of the table slots (items).
      */
     void reorganizeTable(qint32 newColumnCount, double newScale);
+
+    QGridLayout *layout; ///< The grid layout used to organize the table slots.
+    QSvgRenderer *renderer{}; ///< The SVG renderer used to draw the cards.
+    QRectF bounds; ///< The bounding rectangle of the SVG image used to draw the cards.
+    QTimer *countdown; ///< The timer used for the countdown feature.
+    StrategyInfo *strategyInfo; ///< The strategy info dialog.
+
+    bool launching{}; ///< A boolean indicating whether the game is launching.
+    qint32 columnCount = -1; ///< The number of columns in the table grid.
+    qint32 tableSlotCountLimit{}; ///< The maximum number of table slots allowed on the table.
+    qreal scale = -1; ///< The scale of the table slots.
+
+    QVector<int> swapTarget; ///< The current swap target.
+    QVector<TableSlot *> items; ///< The list of table slots on the table.
+    QSet<qint32> jokers; ///< The set of jokers on the table.
+    QSet<qint32> available; ///< The set of available table slots.
+
 };
 
 

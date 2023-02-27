@@ -24,10 +24,17 @@
 // Qt
 #include <QFrame>
 
+/**
+ * @brief Custom QFrame with default YaCardCounter style
+ */
 class YaFrame : public QFrame {
 Q_OBJECT
 
 public:
+    /**
+     * @brief Constructor
+     * @param parent The parent widget
+     */
     explicit YaFrame(QWidget *parent = nullptr);
 };
 

@@ -21,8 +21,6 @@
 #ifndef YACARDCOUNTER_TABLESLOT_HPP
 #define YACARDCOUNTER_TABLESLOT_HPP
 
-// Qt
-#include <QWidget>
 // own
 #include "src/widgets/cards.hpp"
 
@@ -53,11 +51,25 @@ class TableSlot : public Cards {
 Q_OBJECT
 
 public:
+    /**
+     * @brief Constructs a TableSlot object
+     * @param strategies The object containing the strategies
+     * @param renderer The object used to render the playing cards
+     * @param isActive Whether the table slot is initially active
+     * @param parent The parent widget
+     */
     explicit TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isActive = false,
                        QWidget *parent = nullptr);
 
+    /**
+     * @brief Checks if the table slot is fake, i.e., if it contains no deck of cards
+     * @return True if the table slot is fake, false otherwise
+     */
     bool isFake() const;
 
+    /**
+     * @brief Picks up a card from the table slot
+     */
     void pickUpCard();
 
 signals:
@@ -104,52 +116,84 @@ signals:
      */
     void swapTargetSelected();
 
+    /**
+     * @brief StrategyInfoAssist - Signal emitted when the user needs assistance with the strategy information
+     */
     void strategyInfoAssist();
 
 public Q_SLOTS:
 
+    /**
+     * @brief onGamePaused - Slot called when the game is paused or resumed.
+     * @param paused Whether the game is paused or not
+     */
     void onGamePaused(bool paused);
 
+    /**
+     * @brief onCanRemove - Slot called when the table slots can or cannot be removed.
+     * @param canRemove Whether the table slots can be removed or not
+     */
     void onCanRemove(bool canRemove);
 
+    /**
+     * @brief onNewStrategy - Slot called when a new strategy is added.
+     */
     void onNewStrategy();
 
+    /**
+     * @brief onStrategyChanged - Slot called when the selected strategy is changed.
+     * @param index Index of the new strategy in the strategy combo box
+     */
     void onStrategyChanged(int index);
 
+    /**
+     * @brief userChecking - Slot called when the user is checking the weight of the slot.
+     */
     void userChecking();
 
+    /**
+     * @brief reshuffleDeck - Slot called when the user wants to reshuffle the deck.
+     */
     void reshuffleDeck();
 
+    /**
+     * @brief activate - Slot called when the slot is activated, meaning the number of standard decks is set to a value
+     * greater than zero.
+     * @param value Number of standard decks in the table slot
+     */
     void activate(int value);
 
 private:
+    /**
+     * @brief userQuizzing - Method called when the abstract dealer picked up a joker
+     * and the user needs to answer a question.
+     */
     void userQuizzing();
 
-    QList<qint32> cards;
-    Strategy *_strategy{};
-    StrategyInfo *_strategies;
-    qint32 currentWeight = 0;
-    bool fake = true;
+    QList<qint32> cards; // List of card indices
+    Strategy *_strategy{}; // Pointer to the current strategy
+    StrategyInfo *_strategies; // Pointer to the strategies available in the game
+    qint32 currentWeight = 0; // The current weight of the slot
+    bool fake = true; // Flag indicating whether the slot is fake or not
 
-    YaFrame *answerFrame;
-    YaFrame *settingsFrame;
-    YaFrame *controlFrame;
-    /**
-     * @brief deckCount - Spin box for setting the number of standard decks in the table slot
-     */
-    QSpinBox *deckCount;
-    QSpinBox *weightBox;
+    // UI elements
+    YaFrame *answerFrame; // Frame for displaying the answer input and submit button
+    YaFrame *settingsFrame; // Frame for displaying settings related to the table slot
+    YaFrame *controlFrame; // Frame for displaying control buttons
 
-    YaLabel *messageLabel;
-    YaLabel *indexLabel;
-    YaLabel *weightLabel;
-    YaLabel *strategyHintLabel;
+    QSpinBox *deckCount; // Spin box for setting the number of standard decks in the table slot
+    QSpinBox *weightBox; // Spin box for setting the weight of the table slot
 
-    QPushButton *refreshButton;
-    QPushButton *swapButton;
-    QPushButton *closeButton;
+    YaLabel *messageLabel; // Label for displaying messages to the user
+    YaLabel *indexLabel; // Label for displaying the index of the table slot
+    YaLabel *weightLabel; // Label for displaying the weight of the table slot
+    YaLabel *strategyHintLabel; // Label for displaying hints related to the current strategy
 
-    QComboBox *strategyBox;
+    QPushButton *refreshButton; // Button for refreshing the card deck
+    QPushButton *swapButton; // Button for swapping the current slot with another
+    QPushButton *closeButton; // Button for closing the current slot
+
+    QComboBox *strategyBox; // Combo box for selecting the current strategy
 };
 
 #endif //YACARDCOUNTER_TABLESLOT_HPP

@@ -42,42 +42,77 @@ class QListWidget;
 
 class KConfigGroup;
 
+/**
+ * @brief The StrategyInfo class provides a dialog for managing card-counting strategies.
+ */
 class StrategyInfo : public QDialog {
 Q_OBJECT
 public:
+    /**
+     * @brief Constructs a new StrategyInfo dialog with the given SVG renderer, parent widget, and window flags.
+     *
+     * @param renderer The SVG renderer to use for rendering card images.
+     * @param parent The parent widget.
+     * @param flags The window flags.
+     */
     explicit StrategyInfo(QSvgRenderer *renderer, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 
+    /**
+     * @brief Returns the strategy with the given ID.
+     *
+     * @param id The ID of the strategy to retrieve.
+     * @return The strategy with the given ID, or nullptr if no such strategy exists.
+     */
     Strategy *getStrategyById(qint32 id);
 
+    /**
+     * @brief Shows the strategy with the given name.
+     *
+     * @param name The name of the strategy to show.
+     */
     void showStrategyByName(const QString &name);
 
+    /**
+     * @brief Returns a vector containing all strategies.
+     *
+     * @return A vector containing all strategies.
+     */
     QVector<Strategy *> getStrategies();
 
 signals:
 
+    /**
+     * @brief This signal is emitted when a new strategy is created.
+     */
     void newStrategy();
 
 private:
-    QVector<Strategy *> items;
-    QSvgRenderer *m_renderer;
+    QVector<Strategy *> items; ///< The strategies currently being displayed.
+    QSvgRenderer *m_renderer; ///< The SVG renderer to use for rendering card images.
+    qint32 _id; ///< The ID of the currently selected strategy.
+    QLabel *_name; ///< The label displaying the name of the currently selected strategy.
+    QLabel *_description; ///< The label displaying the description of the currently selected strategy.
+    QLineEdit *_nameInput; ///< The input field for editing the name of the currently selected strategy.
+    QTextEdit *_descriptionInput; ///< The input field for editing the description of the currently selected strategy.
+    QPushButton *saveButton; ///< The button for saving changes to the currently selected strategy.
+    QListWidget *listWidget; ///< The list of available strategies.
+    QVector<QSpinBox *> weights; ///< The list of spin boxes for editing strategy weights.
+    KConfigGroup *strategiesGroup; ///< The configuration group containing the list of strategies.
 
-    qint32 _id;
-    QLabel *_name;
-    QLabel *_description;
-    QLineEdit *_nameInput;
-    QTextEdit *_descriptionInput;
-    QPushButton *saveButton;
-    QListWidget *listWidget;
-    QVector<QSpinBox *> weights;
-
-    KConfigGroup *strategiesGroup;
-
+    /**
+     * @brief Initializes the list of built-in strategies.
+     */
     void initStrategies();
 
+    /**
+     * @brief Adds a fake strategy to the list of strategies.
+     */
     void addFakeStrategy();
 
+    /**
+     * @brief Fills the list of available strategies with the current set of strategies.
+     */
     void fillList();
 };
-
 
 #endif //YACARDCOUNTER_STRATEGYINFO_HPP

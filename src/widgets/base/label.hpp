@@ -21,15 +21,22 @@
 #ifndef YACARDCOUNTER_YALABEL_HPP
 #define YACARDCOUNTER_YALABEL_HPP
 
-// Qt
 #include <QLabel>
 
+/**
+ * @brief Custom QLabel with default YaCardCounter style
+ */
 class YaLabel : public QLabel {
 Q_OBJECT
 
 public:
+    /**
+     * @brief Constructor
+     * @param text The text of the label
+     * @param parent The parent widget
+     */
     explicit YaLabel(const QString &text, QWidget *parent = nullptr);
 };
 
-
 #endif //YACARDCOUNTER_YALABEL_HPP
+
