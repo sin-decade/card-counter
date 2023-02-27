@@ -31,6 +31,8 @@
 #include <QTextEdit>
 // KF
 #include <KLocalizedString>
+#include <KConfigGroup>
+#include <KSharedConfig>
 // own
 #include "strategyinfo.hpp"
 #include "strategy.hpp"
@@ -41,6 +43,8 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
         : QDialog(parent, flags), m_renderer(renderer), _id(0) {
     setWindowTitle("Strategy Info");
     setModal(true);
+
+    strategiesGroup = new KConfigGroup(KSharedConfig::openConfig(), "YaStrategies");
 
     initStrategies();
 
@@ -110,15 +114,17 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
 
     listWidget->setCurrentItem(listWidget->item(0));
     connect(saveButton, &QPushButton::clicked, this, [=]() {
-        if (_nameInput->text() != _name->text() || _descriptionInput->toMarkdown() != _description->text()) {
-            return;
-        }
+        // todo: check if the name is new
         QVector<qint32> currentWeights;
         for (auto &weight: weights) {
             currentWeights.push_back(weight->value());
         }
         items[_id] = new Strategy(_name->text(), _description->text(),
                                   currentWeights, true);
+        KConfigGroup strategyGroup = strategiesGroup->group(items[_id]->getName());
+        strategyGroup.writeEntry("description", items[_id]->getDescription());
+        strategyGroup.writeEntry("weights", currentWeights.toList());
+        strategiesGroup->config()->sync();
         listWidget->currentItem()->setText(_name->text());
         addFakeStrategy();
         emit newStrategy();
@@ -160,6 +166,10 @@ void StrategyInfo::showStrategyByName(const QString &name) {
         _id = id;
         _name->setText(items[_id]->getName());
         _description->setText(items[_id]->getDescription());
+        if (id + 1 < items.size()) {
+            _nameInput->setText(_name->text());
+            _descriptionInput->setText(_description->text());
+        }
         bool isCustom = items[_id]->isCustom();
         _descriptionInput->setHidden(!isCustom);
         _nameInput->setHidden(!isCustom);
@@ -234,6 +244,16 @@ void StrategyInfo::initStrategies() {
             "the deck, with a focus on the 10-value cards, and is considered one of the earliest "
             "and most basic card counting systems.",
             {1, 1, 1, 1, 1, 1, 1, 1, 1, -2, -2, -2, -2}));
+
+    QStringList strategyNames = strategiesGroup->groupList();
+    for (const auto &strategyName: strategyNames) {
+        KConfigGroup strategyGroup = strategiesGroup->group(strategyName);
+        items.push_back(new Strategy(
+                strategyName, strategyGroup.readEntry("description", ""),
+                QVector<int>::fromList(strategyGroup.readEntry("weights", QList<int>())),
+                true));
+
+    }
 }
 
 void StrategyInfo::addFakeStrategy() {

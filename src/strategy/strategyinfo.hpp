@@ -40,6 +40,8 @@ class QTextEdit;
 
 class QListWidget;
 
+class KConfigGroup;
+
 class StrategyInfo : public QDialog {
 Q_OBJECT
 public:
@@ -67,6 +69,8 @@ private:
     QPushButton *saveButton;
     QListWidget *listWidget;
     QVector<QSpinBox *> weights;
+
+    KConfigGroup *strategiesGroup;
 
     void initStrategies();
 
