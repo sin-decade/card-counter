@@ -18,16 +18,16 @@
  *
 */
 
-#ifndef YACARDCOUNTER_FRAME_HPP
-#define YACARDCOUNTER_FRAME_HPP
+#ifndef CARD_COUNTER_FRAME_HPP
+#define CARD_COUNTER_FRAME_HPP
 
 // Qt
 #include <QFrame>
 
 /**
- * @brief Custom QFrame with default YaCardCounter style
+ * @brief Custom QFrame with default Card-Counter style
  */
-class YaFrame : public QFrame {
+class CCFrame : public QFrame {
 Q_OBJECT
 
 public:
@@ -35,8 +35,8 @@ public:
      * @brief Constructor
      * @param parent The parent widget
      */
-    explicit YaFrame(QWidget *parent = nullptr);
+    explicit CCFrame(QWidget *parent = nullptr);
 };
 
 
-#endif //YACARDCOUNTER_FRAME_HPP
+#endif //CARD_COUNTER_FRAME_HPP

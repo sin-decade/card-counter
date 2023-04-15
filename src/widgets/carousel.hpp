@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_CAROUSEL_HPP
-#define YACARDCOUNTER_CAROUSEL_HPP
+#ifndef CARD_COUNTER_CAROUSEL_HPP
+#define CARD_COUNTER_CAROUSEL_HPP
 
 // Qt
 #include <QWidget>
@@ -92,4 +92,4 @@ private:
 };
 
 
-#endif //YACARDCOUNTER_CAROUSEL_HPP
+#endif //CARD_COUNTER_CAROUSEL_HPP

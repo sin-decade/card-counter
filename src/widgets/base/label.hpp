@@ -18,15 +18,15 @@
  *
 */
 
-#ifndef YACARDCOUNTER_YALABEL_HPP
-#define YACARDCOUNTER_YALABEL_HPP
+#ifndef CARD_COUNTER_LABEL_HPP
+#define CARD_COUNTER_LABEL_HPP
 
 #include <QLabel>
 
 /**
- * @brief Custom QLabel with default YaCardCounter style
+ * @brief Custom QLabel with default Card-Counter style
  */
-class YaLabel : public QLabel {
+class CCLabel : public QLabel {
 Q_OBJECT
 
 public:
@@ -35,8 +35,8 @@ public:
      * @param text The text of the label
      * @param parent The parent widget
      */
-    explicit YaLabel(const QString &text, QWidget *parent = nullptr);
+    explicit CCLabel(const QString &text, QWidget *parent = nullptr);
 };
 
-#endif //YACARDCOUNTER_YALABEL_HPP
+#endif //CARD_COUNTER_LABEL_HPP
 

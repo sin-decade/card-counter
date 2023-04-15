@@ -29,18 +29,18 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    KLocalizedString::setApplicationDomain("yacardcounter");
+    KLocalizedString::setApplicationDomain("card-counter");
 
     KAboutData aboutData(
-            QStringLiteral("yacardcounter"),
-            i18n("YaCardCounter"),
+            QStringLiteral("card-counter"),
+            i18n("Card-Counter"),
             QStringLiteral("1.0"),
             i18n("A tool for improving arithmetic skills and memory retention "
                  "through counting cards in different table-slots with different strategies. "),
             KAboutLicense::GPL_V3,
             i18n("(c) 2023, Yaroslav Riabtsev"),
             QString(),
-            QStringLiteral("https://github.com/YaCodeLab/YaCardCounter"),
+            QStringLiteral("https://sin-decade.github.io/card-counter/"),
             QStringLiteral("yaroslav.riabtsev@rwth-aachen.de"));
 
     aboutData.addAuthor(i18n("Yaroslav Riabtsev"), i18n("Original author"),

@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_CARDS_HPP
-#define YACARDCOUNTER_CARDS_HPP
+#ifndef CARD_COUNTER_CARDS_HPP
+#define CARD_COUNTER_CARDS_HPP
 
 // Qt
 #include <QWidget>
@@ -191,4 +191,4 @@ private:
 };
 
 
-#endif //YACARDCOUNTER_CARDS_HPP
+#endif //CARD_COUNTER_CARDS_HPP

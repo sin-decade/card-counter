@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_MAINWINDOW_HPP
-#define YACARDCOUNTER_MAINWINDOW_HPP
+#ifndef CARD_COUNTER_MAINWINDOW_HPP
+#define CARD_COUNTER_MAINWINDOW_HPP
 
 // KF
 #include <KXmlGuiWindow>
@@ -108,5 +108,5 @@ private:
     QPair<qint32, qint32> score;
 };
 
-#endif // YACARDCOUNTER_MAINWINDOW_HPP
+#endif // CARD_COUNTER_MAINWINDOW_HPP
 

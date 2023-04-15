@@ -20,7 +20,7 @@
 
 #include "label.hpp"
 
-YaLabel::YaLabel(const QString &text, QWidget *parent) : QLabel(text, parent) {
+CCLabel::CCLabel(const QString &text, QWidget *parent) : QLabel(text, parent) {
     setAutoFillBackground(true);
     setPalette(QPalette(Qt::gray));
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);

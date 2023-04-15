@@ -1,18 +1,18 @@
-# YaCardCounter
+# Card-Counter
 
-![GitHub last commit](https://img.shields.io/github/last-commit/YaCodeLab/YaCardCounter)
-![GitHub issues](https://img.shields.io/github/issues-raw/YaCodeLab/YaCardCounter)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/YaCodeLab/YaCardCounter)
+![GitHub last commit](https://img.shields.io/github/last-commit/sin-decade/card-counter)
+![GitHub issues](https://img.shields.io/github/issues-raw/sin-decade/card-counter)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/sin-decade/card-counter)
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ce39cb6968f4ed0a7e187c723cdc5c4)](https://www.codacy.com/gh/YaCodeLab/YaCardCounter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=YaCodeLab/YaCardCounter&amp;utm_campaign=Badge_Grade)
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/YaCodeLab/YaCardCounter?include_prereleases)
-![GitHub](https://img.shields.io/github/license/YaCodeLab/YaCardCounter)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6ce39cb6968f4ed0a7e187c723cdc5c4)](https://www.codacy.com/gh/sin-decade/card-counter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sin-decade/card-counter&amp;utm_campaign=Badge_Grade)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/sin-decade/card-counter?include_prereleases)
+![GitHub](https://img.shields.io/github/license/sin-decade/card-counter)
 
-**YaCardCounter** is an educational game developed and maintained by YaRiabtsev
-as part of [YaCodeLab](https://github.com/YaCodeLab) organization. The project
-aims to improve basic arithmetic skills and memory retention by counting cards
-in different table-slots with different strategies. The user has the option to
-use one of the preloaded strategies (Hi-Lo, Hi-Opt I, Hi-Opt II, Zen Count and
+**Card-Counter** is an educational game developed and maintained by YaRiabtsev
+as part of [the sindecade](https://github.com/sin-decade). The project aims to
+improve basic arithmetic skills and memory retention by counting cards in
+different table-slots with different strategies. The user has the option to use
+one of the preloaded strategies (Hi-Lo, Hi-Opt I, Hi-Opt II, Zen Count and
 other) or create their own custom strategy. The game is implemented in C++ with
 using Qt5, KF5, KF5KDEGames and carddeck packs from kdegames-card-data-kf5.
 
@@ -45,11 +45,12 @@ score serves as a motivational tool.
 
 This project is open for contribution from other people who have more knowledge
 in this area. If you're interested in contributing, please
-contact [YaRiabtsev](https://github.com/YaRiabtsev) or open
-an [issue](https://github.com/YaCodeLab/YaCardCounter/issues/new/choose) on the
+contact [YaRiabtsev](https://t.me/YaRiabtsev) or open
+an [issue](https://github.com/sin-decade/card-counter/issues/new/choose) on the
 GitHub repository.
 
-To get involved/development it is recommended to read the documentation
+To get involved/development it is recommended to read
+the [documentation](https://sin-decade.github.io/card-counter/docs/html/)
 and [configure the environment](https://community.kde.org/Get_Involved/development)
 according to the specified steps.
 
@@ -61,11 +62,8 @@ cmake --build build/
 cmake --install build/
 
 source build/prefix.sh # located in the build directory
-ya-cardcounter
+card-counter
 ```
-
-You can find the
-documentation [here](https://yacodelab.github.io/YaCardCounter/docs/html/).
 
 ## License
 

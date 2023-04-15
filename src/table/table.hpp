@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_TABLE_HPP
-#define YACARDCOUNTER_TABLE_HPP
+#ifndef CARD_COUNTER_TABLE_HPP
+#define CARD_COUNTER_TABLE_HPP
 
 // Qt
 #include <QWidget>
@@ -176,4 +176,4 @@ private:
 };
 
 
-#endif //YACARDCOUNTER_TABLE_HPP
+#endif //CARD_COUNTER_TABLE_HPP

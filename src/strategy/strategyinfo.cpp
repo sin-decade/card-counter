@@ -44,7 +44,7 @@ StrategyInfo::StrategyInfo(QSvgRenderer *renderer, QWidget *parent, Qt::WindowFl
     setWindowTitle("Strategy Info");
     setModal(true);
 
-    strategiesGroup = new KConfigGroup(KSharedConfig::openConfig(), "YaStrategies");
+    strategiesGroup = new KConfigGroup(KSharedConfig::openConfig(), "CCStrategies");
 
     initStrategies();
 
