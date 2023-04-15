@@ -20,7 +20,7 @@
 
 #include "frame.hpp"
 
-YaFrame::YaFrame(QWidget *parent) : QFrame(parent) {
+CCFrame::CCFrame(QWidget *parent) : QFrame(parent) {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     setAutoFillBackground(true);
     setPalette(QPalette(Qt::gray));

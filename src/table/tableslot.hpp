@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_TABLESLOT_HPP
-#define YACARDCOUNTER_TABLESLOT_HPP
+#ifndef CARD_COUNTER_TABLESLOT_HPP
+#define CARD_COUNTER_TABLESLOT_HPP
 
 // own
 #include "src/widgets/cards.hpp"
@@ -32,9 +32,9 @@ class QVBoxLayout;
 
 class QPushButton;
 
-class YaFrame;
+class CCFrame;
 
-class YaLabel;
+class CCLabel;
 
 class StrategyInfo;
 
@@ -177,17 +177,17 @@ private:
     bool fake = true; // Flag indicating whether the slot is fake or not
 
     // UI elements
-    YaFrame *answerFrame; // Frame for displaying the answer input and submit button
-    YaFrame *settingsFrame; // Frame for displaying settings related to the table slot
-    YaFrame *controlFrame; // Frame for displaying control buttons
+    CCFrame *answerFrame; // Frame for displaying the answer input and submit button
+    CCFrame *settingsFrame; // Frame for displaying settings related to the table slot
+    CCFrame *controlFrame; // Frame for displaying control buttons
 
     QSpinBox *deckCount; // Spin box for setting the number of standard decks in the table slot
     QSpinBox *weightBox; // Spin box for setting the weight of the table slot
 
-    YaLabel *messageLabel; // Label for displaying messages to the user
-    YaLabel *indexLabel; // Label for displaying the index of the table slot
-    YaLabel *weightLabel; // Label for displaying the weight of the table slot
-    YaLabel *strategyHintLabel; // Label for displaying hints related to the current strategy
+    CCLabel *messageLabel; // Label for displaying messages to the user
+    CCLabel *indexLabel; // Label for displaying the index of the table slot
+    CCLabel *weightLabel; // Label for displaying the weight of the table slot
+    CCLabel *strategyHintLabel; // Label for displaying hints related to the current strategy
 
     QPushButton *refreshButton; // Button for refreshing the card deck
     QPushButton *swapButton; // Button for swapping the current slot with another
@@ -196,4 +196,4 @@ private:
     QComboBox *strategyBox; // Combo box for selecting the current strategy
 };
 
-#endif //YACARDCOUNTER_TABLESLOT_HPP
+#endif //CARD_COUNTER_TABLESLOT_HPP

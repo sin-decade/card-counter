@@ -1,5 +1,5 @@
-# Doxyfile for YaCardCounter
-PROJECT_NAME           = "YaCardCounter"
+# Doxyfile for Card-Counter
+PROJECT_NAME           = "Card-Counter"
 PROJECT_NUMBER         = 1.0
 PROJECT_BRIEF          = "A tool for improving arithmetic skills and memory"\
                          "retention through counting cards in different"\

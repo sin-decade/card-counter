@@ -40,11 +40,11 @@
 TableSlot::TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isActive, QWidget *parent)
         : Cards(renderer, parent), _strategies(strategies) {
 
-    // YaLabels:
-    messageLabel = new YaLabel(i18n("TableSlot Weight: 0"));
-    indexLabel = new YaLabel("0/0");
-    weightLabel = new YaLabel("weight: 0");
-    strategyHintLabel = new YaLabel("");
+    // QLabels:
+    messageLabel = new CCLabel(i18n("TableSlot Weight: 0"));
+    indexLabel = new CCLabel("0/0");
+    weightLabel = new CCLabel("weight: 0");
+    strategyHintLabel = new CCLabel("");
     onStrategyChanged(0);
 
     // QComboBoxes:
@@ -54,17 +54,17 @@ TableSlot::TableSlot(StrategyInfo *strategies, QSvgRenderer *renderer, bool isAc
     connect(strategyBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &TableSlot::onStrategyChanged);
     auto *indexing = new QCheckBox();
-    connect(indexing, &QCheckBox::stateChanged, indexLabel, &YaLabel::setVisible);
+    connect(indexing, &QCheckBox::stateChanged, indexLabel, &CCLabel::setVisible);
     auto *strategyHint = new QCheckBox();
-    connect(strategyHint, &QCheckBox::stateChanged, strategyHintLabel, &YaLabel::setVisible);
+    connect(strategyHint, &QCheckBox::stateChanged, strategyHintLabel, &CCLabel::setVisible);
     auto *training = new QCheckBox();
-    connect(training, &QCheckBox::stateChanged, weightLabel, &YaLabel::setVisible);
+    connect(training, &QCheckBox::stateChanged, weightLabel, &CCLabel::setVisible);
 
     // QFrames:
-    answerFrame = new YaFrame();
-    settingsFrame = new YaFrame();
+    answerFrame = new CCFrame();
+    settingsFrame = new CCFrame();
     settingsFrame->show();
-    controlFrame = new YaFrame();
+    controlFrame = new CCFrame();
 
     // QSpinBoxes:
     weightBox = new QSpinBox();

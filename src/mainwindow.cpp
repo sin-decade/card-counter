@@ -68,7 +68,7 @@ void MainWindow::setupActions() {
     KgDifficultyGUI::init(this);
     connect(Kg::difficulty(), &KgDifficulty::currentLevelChanged, this, &MainWindow::newGame);
 
-    setupGUI(Default, "yacardcounterui.rc");
+    setupGUI(Default, "card-counterui.rc");
 }
 
 void MainWindow::newGame() {

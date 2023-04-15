@@ -18,8 +18,8 @@
  *
 */
 
-#ifndef YACARDCOUNTER_STRATEGY_HPP
-#define YACARDCOUNTER_STRATEGY_HPP
+#ifndef CARD_COUNTER_STRATEGY_HPP
+#define CARD_COUNTER_STRATEGY_HPP
 
 // Qt
 #include <QString>
@@ -79,5 +79,5 @@ private:
     QString _description; /**< A short description of the strategy */
 };
 
-#endif //YACARDCOUNTER_STRATEGY_HPP
+#endif //CARD_COUNTER_STRATEGY_HPP
 
